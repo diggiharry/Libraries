@@ -1,0 +1,30 @@
+#######################################
+# Syntax Coloring Map For Buttons
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+music KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+init	KEYWORD2
+play	KEYWORD2
+pause	KEYWORD2
+next	KEYWORD2
+prev	KEYWORD2
+volume	KEYWORD2
+power	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+UP	LITERAL1
+DOWN	LITERAL1
+
+ON	LITERAL1
+OFF	LITERAL1

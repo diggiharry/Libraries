@@ -1,0 +1,54 @@
+Funtions:
+
+
+    init();
+Description: 	Initialize the Music Player's controlling pins
+Parameters:  	None
+Return:		 	Nothing	 
+Usage: 		 	music.init();//Initialize the Music Player
+
+
+	play();
+Description: 	Start to play music
+Parameters:  	None
+Return:		 	Nothing	 
+Usage: 		 	music.play();//Start to play music
+
+
+	pause();
+Description: 	Stop playing music
+Parameters:  	None
+Return:		 	Nothing	 
+Usage: 		 	music.pause();//Stop playing music
+
+
+	next();
+Description: 	Play next song
+Parameters:  	None
+Return:		 	Nothing	 
+Usage: 		 	music.next();//Play next song
+
+
+	prev();
+Description: 	Play previous song
+Parameters:  	None
+Return:		 	Nothing	 
+Usage: 		 	music.prev();//Play previous song
+
+
+	volume(direct, volumevalue);
+Description: 	Turn the volume up or down
+Parameters:  	direct: UP: Turn the volume up
+						DOWN: Turn the volume down
+				
+				volumevalue: The value of the volume (0~20)
+Return:		 	Nothing	 
+Usage: 		 	music.volume(UP,10);//Turn the volume up to 10
+
+
+	power(powerstatus);
+Description: 	Power on or off the music player
+Parameters:  	powerstatus: ON: Power on the music player
+							 OFF: Power off the music player
+Return:		 	Nothing	 
+Usage: 		 	music.power(ON);//Power on the music player
