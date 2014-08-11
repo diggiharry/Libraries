@@ -33,7 +33,9 @@ class Fader {
         int triangle_function(unsigned long ms,unsigned int period, int phase);
         void fade_to_rainbow(unsigned long ms);
         void fade_to_color(unsigned long ms);
-       
+    
+        void rgbToHsv(byte r, byte g, byte b, double hsv[]);
+        void hsvToRgb(double h, double s, double v, byte rgb[]);
         int phase_green = 1500;
         int phase_blue = 3000;
         int period = 5000;
