@@ -6,7 +6,7 @@
 #define BACKLIGHT_GREEN 6 
 #define BACKLIGHT_BLUE 7
 
-U8GLIB_LM6059_2X u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
+static U8GLIB_LM6059_2X u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
 
 /*
  * Constructor
@@ -68,7 +68,6 @@ void UI::init() {
         clock.getTime(); 
         
         due_clock->set_time(clock.hour, clock.minute, clock.second);
-   
 
 	TSL2561.init();
 
@@ -410,6 +409,106 @@ void UI::draw_alarm(void) {
 		break;
 	}
 }
+
+
+/*
+ * function enc_lightrgb()
+ *
+ * encoder assignment for lightrgb
+ */
+void UI::enc_lightrgb(void) {
+
+	switch(lightrgb_state)
+	{
+	case -1:
+		enc->setBounds(1,24,10);
+		enc->setValue(alarm_hour);
+		alarm_state = 0;
+		break;
+	case 0:
+		alarm_hour = enc->getValue();
+		break;
+	case 1:
+		alarm_minute = enc->getValue();
+		break;
+	case 2:
+		alarm_is_set = enc->getValue();
+		break;
+	}
+
+	if (enc->isReleased()) {
+		switch(alarm_state)
+		{
+		case 0:
+			alarm_state = 1;
+			enc->setBounds(0,59,8);
+			enc->setValue(alarm_minute);
+			break;
+		case 1:
+			alarm_state = 2;
+			enc->setBounds(0,1,20);
+			enc->setValue(alarm_is_set);
+			break;
+		case 2:
+			ui_state = STATE_CLOCK;
+			break;
+		}
+	}
+
+}
+
+/*
+ * function draw_lightrgb()
+ *
+ * function for selecting rgb mode
+ */
+void UI::draw_lightrgb(void) {
+	int time_y = 45;
+	int time_x = 10;
+
+	u8g.setFont(u8g_font_fixed_v0);
+	u8g.setPrintPos(10,10);
+	u8g.print("SET ALARM TIME");
+
+	// draw alarm state
+	if (alarm_is_set) {
+		u8g.setFont(u8g_font_fixed_v0);
+		u8g.setPrintPos(10,57);
+		u8g.print("Alarm is set");
+	} else {
+		u8g.setFont(u8g_font_fixed_v0);
+		u8g.setPrintPos(10,57);
+		u8g.print("Alarm is not set");
+	}
+
+	// Draw Time
+	u8g.setFont(u8g_font_fub30n);
+	u8g.setPrintPos(time_x,time_y);
+	u8g.print(dec2str(alarm_hour));
+
+	u8g.setPrintPos(time_x+60,time_y);
+	u8g.print(dec2str(alarm_minute));
+
+	u8g.setFont(u8g_font_fub30n);
+	u8g.setPrintPos(time_x+46,time_y-5);
+	u8g.print(":");
+
+	if (blinkfast)
+	switch(alarm_state)
+	{
+	case 0:
+		u8g.drawLine(time_x+5,time_y+1,time_x+40,time_y+1);
+		break;
+	case 1:
+		u8g.drawLine(time_x+5+60,time_y+1,time_x+40+60,time_y+1);
+		break;
+	case 2:
+		if (!alarm_is_set) u8g.drawLine(10,58,98,58);
+		else u8g.drawLine(10,58,75,58);
+		break;
+	}
+}
+
 
 
 /*

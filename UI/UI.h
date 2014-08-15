@@ -16,7 +16,7 @@ class U8GLIB;
 #include <Digital_Light_TSL2561.h>
 #include <Encoder.h>
 #include <rtc_clock.h>
-
+#include <Menu.h>
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -33,7 +33,6 @@ class U8GLIB;
 
 //define mpr121 buttons
 #define MPR121_MENU 1
-
 
 class UI {
   public:
@@ -74,6 +73,12 @@ class UI {
     int alarm_minute;
     boolean alarm_is_set;
 
+    //Variables for ui_state = STATE_LIGHTRGB
+    int lightrgb_state;
+    void draw_lightrgb();
+    void enc_lightrgb();
+    
+    
     int ui_state;
     int dim; // has to be between 26 and 255 !
     int redVal; // Variables to store the values to send to the pins
