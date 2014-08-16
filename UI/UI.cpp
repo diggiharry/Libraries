@@ -81,10 +81,12 @@ void UI::init() {
 
 void UI::switch_blink() {
     Menu::switch_blink();
+    //Menu::blink = !Menu::blink;
 }
 
 void UI::switch_blinkfast() {
     Menu::switch_blinkfast();
+    //Menu::blinkfast = !Menu::blinkfast;
 }
 
 void UI::getTime() {
