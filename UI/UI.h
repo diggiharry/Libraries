@@ -16,18 +16,19 @@
 #include <Digital_Light_TSL2561.h>
 #include <Encoder.h>
 #include <rtc_clock.h>
-
+#include "Fader.h"
 #include "Alarm.h"
 
 //Menu stuff
 #include <Menu.h>
 #include <Clock_Menu.h>
-#include <Alarm_Menu.h>
-#include <Setup_Menu.h>
-
-class Alarm_Menu;
 class Clock_Menu;
+#include <Alarm_Menu.h>
+class Alarm_Menu;
+#include <Setup_Menu.h>
 class Setup_Menu;
+#include <LightRGB_Menu.h>
+class LightRGB_Menu;
 
 
 #define LCD_MOSI 22
@@ -49,7 +50,7 @@ class Setup_Menu;
 class UI {
   public:
 
-    UI(Encoder *encoder);
+    UI(Encoder *encoder, Fader *fader);
     void draw();
     void init();
     void cycleRBG(long ms);
@@ -73,9 +74,10 @@ class UI {
     Clock_Menu* clockm;
     Setup_Menu* setupm;
     Alarm_Menu* alarmm;   
+    LightRGB_Menu* lightm;
     
     Alarm alarm;
-    
+   
     U8GLIB_LM6059_2X u8g;
     
     int ui_state;
@@ -92,6 +94,8 @@ class UI {
 
     DS1307 clock;
     Encoder *enc;
+    Fader *fade;
+
     RTC_clock *due_clock;
     const char* daynames[7]={"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 };

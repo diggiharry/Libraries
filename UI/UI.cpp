@@ -15,12 +15,9 @@
 /*
  * Constructor
  */
-UI::UI(Encoder *encoder) 
-    : u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST),
+UI::UI(Encoder *encoder,Fader *fader) 
+    :   u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST),
         alarm()
-     // clockm(enc,&u8g,&ui_state), 
-     // alarmm(enc,&u8g,&ui_state),
-     // setupm(enc,&u8g,&ui_state) 
 {
 	ui_state = STATE_CLOCK;
         
@@ -42,18 +39,21 @@ UI::UI(Encoder *encoder)
 
     enc = encoder;
     
+    fade = fader;
+    
     due_clock = &RTC_clock(XTAL);
     
     clockm = new Clock_Menu(enc,&u8g,&ui_state,due_clock, &alarm); 
     alarmm = new Alarm_Menu(enc,&u8g,&ui_state,&alarm),
     setupm = new Setup_Menu(enc,&u8g,&ui_state); 
+    lightm = new LightRGB_Menu(enc,&u8g,&ui_state,fade); 
 
 }
 
 /*
  * function init()
  *
- * should be called in setup(), initializes mpr121 and sets u8g parameters
+ * should be called in setup(), initializes all stuff and sets u8g parameters
  */
 void UI::init() {
 	u8g.setColorIndex(1);         //BW Mode
@@ -73,7 +73,7 @@ void UI::init() {
         due_clock->set_time(clock.hour, clock.minute, clock.second);
 
 	TSL2561.init();
-
+         
 	analogWrite(BACKLIGHT_RED,   redVal);   // Write current values to LED pins
 	analogWrite(BACKLIGHT_GREEN, greenVal);
 	analogWrite(BACKLIGHT_BLUE,  blueVal);
@@ -81,12 +81,10 @@ void UI::init() {
 
 void UI::switch_blink() {
     Menu::switch_blink();
-    //Menu::blink = !Menu::blink;
 }
 
 void UI::switch_blinkfast() {
     Menu::switch_blinkfast();
-    //Menu::blinkfast = !Menu::blinkfast;
 }
 
 void UI::getTime() {
@@ -113,37 +111,39 @@ void UI::draw(void) {
   do {
 	  switch(ui_state)
 	  {
-	   case	STATE_CLOCK:
-		   clockm->draw();
-	   	   break;
-	   case STATE_SETUP:
-		   setupm->draw();
-	   	   break;
-	   case STATE_ALARM:
-		   alarmm->draw();
-	   	   break;
+            case STATE_CLOCK:
+                    clockm->draw();
+                    break;
+            case STATE_SETUP:
+                    setupm->draw();
+                    break;
+            case STATE_ALARM:
+                    alarmm->draw();
+                    break;
+            case STATE_LIGHTRGB:
+                    lightm->draw();
+                    break;                  
 	}
   } while( u8g.nextPage() ); 
-
 }
-
 
 void UI::update_input() {
 	switch(ui_state)
 	  {
-	   case	STATE_CLOCK:
-		   clockm->input();
-		   break;
-	   case STATE_SETUP:
-		   setupm->input();
-		   break;
-	   case STATE_ALARM:
-		   alarmm->input();
-		   break;
+            case STATE_CLOCK:
+                    clockm->input();
+                    break;
+            case STATE_SETUP:
+                    setupm->input();
+                    break;
+            case STATE_ALARM:
+                    alarmm->input();
+                    break;
+            case STATE_LIGHTRGB:
+                    lightm->input();
+                    break;
 	  }
 }
-
-
 
 /*
  * function cycleRBG()

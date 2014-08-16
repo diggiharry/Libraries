@@ -37,6 +37,23 @@ void Fader::update(unsigned long ms) {
     sb.update();
 }
 
+void Fader::set_color(int colors[12]) {
+    for (int h = 0;h<12;h++) {
+        values[h] = colors[h];
+    }  
+    state = IDLE;
+}
+
+void Fader::set_all(int red, int green, int blue) {
+    for (int h = 0;h<4;h++) {
+        values[h*3] = red;
+        values[h*3+1] = green;
+        values[h*3+2] =  blue;
+    } 
+    state = IDLE;
+}
+
+
 void Fader::fade_to_color() {
     unsigned long curr_millis = millis();
     float diff_millis = curr_millis - prev_millis;
@@ -69,10 +86,14 @@ int Fader::triangle_function(unsigned long ms,unsigned int period, int phase) {
     return 1023 * 2 * abs(round( ( (float) ms+phase)/period)-( ( (float) ms+phase)/ period)) ;    
 }
 
-void Fader::start_rainbow() {
+void Fader::start_rainbow(int period, int phase1, int phase2) {
+    this->phase1 = phase1;
+    this->phase2 = phase2;
+    this->period = period;
+    
     int red = triangle_function(0,period,0);
-    int green = triangle_function(0,period,phase_green);
-    int blue = triangle_function(0,period,phase_blue);
+    int green = triangle_function(0,period,phase1);
+    int blue = triangle_function(0,period,phase2);
     int start_values[12] = { red,green,0, 0,green,blue, red,0,blue, red,green,blue }; 
     start_fade_to_color(start_values,3000);
     target_state = RAINBOW;
@@ -86,8 +107,8 @@ void Fader::rainbow() {
     green = floor( 712+311 * (double) cos(2*PI/period*(phase_green-ms)));
     blue = floor( 712+311 * (double) cos(2*PI/period*(phase_blue-ms)));*/
     float red = triangle_function(diff_millis,period,0);
-    float green = triangle_function(diff_millis,period,phase_green);
-    float blue = triangle_function(diff_millis,period,phase_blue);
+    float green = triangle_function(diff_millis,period,phase1);
+    float blue = triangle_function(diff_millis,period,phase2);
 
     values[0] = red;
     values[1] = green;

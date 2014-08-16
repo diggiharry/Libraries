@@ -59,9 +59,9 @@ void ShiftBar::spiSend(int commandmode, int red, int blue, int green) {
   unsigned int buffer = 0;
 
   buffer = buffer + (commandmode << 30);
-  buffer = buffer + ( (0b1111111111 & blue)  << 20 );
+  buffer = buffer + ( (0b1111111111 & green)  << 20 );
   buffer = buffer + ( (0b1111111111 & red)  << 10 );
-  buffer = buffer +  (0b1111111111 & green) ;
+  buffer = buffer +  (0b1111111111 & blue) ;
 
   SPI.transfer( (unsigned char) ( ( (255 << 24) & buffer ) >> 24) );
   SPI.transfer( (unsigned char) ( ( (255 << 16) & buffer ) >> 16) );

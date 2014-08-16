@@ -21,8 +21,10 @@ class Fader {
         Fader();
         void update(unsigned long ms);
         void init();
-        void start_rainbow();        
+        void start_rainbow(int period = 5000, int phase1 = 1000, int phase2 = 2000);        
         void start_fade_to_color(int colors[12],unsigned long duration);
+        void set_color(int colors[12]);
+        void set_all(int red, int green, int blue);
         
     private: 
         int state;   
@@ -39,8 +41,8 @@ class Fader {
 
         void rgbToHsv(byte r, byte g, byte b, double hsv[]);
         void hsvToRgb(double h, double s, double v, byte rgb[]);
-        int phase_green = 500;
-        int phase_blue = 1000;
+        int phase1 = 500;
+        int phase2 = 1000;
         int period = 2000;
         void rainbow();
 
