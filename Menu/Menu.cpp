@@ -6,14 +6,22 @@ Menu::Menu(Encoder *encoder, U8GLIB_LM6059_2X *u8glib,int *parent_state) {
     p_state = parent_state;
 }
 
+boolean Menu::blink = 0;
+boolean Menu::blinkfast = 0;
+
+//define virtual function because "warning: undefined reference to `vtable for Menu'"
+void Menu::draw() {    
+}
+void Menu::input() {    
+}
+
 static void Menu::switch_blink() {
-    Menu::blink = !Menu::blink;
+    blink = !blink;
 }
 
 static void Menu::switch_blinkfast() {
-    Menu::blinkfast = !Menu::blinkfast;
+    blinkfast = !blinkfast;
 }
-
 
 static String Menu::time2str(int hour,int minute) {
 	String h;

@@ -21,15 +21,15 @@ class Menu {
         virtual void draw();
         virtual void input();
 
-        static boolean blink;
-        static boolean blinkfast;
-
         //function has to be called in main programm at a period of 500ms
         //it is used to let stuff on the display blink
         static void switch_blink();
         //function has to be called in main programm at a period of 200ms
         //it is used to let stuff on the display blink fast
         static void switch_blinkfast();
+
+        static boolean blink;
+        static boolean blinkfast; 
         
     protected:
         Encoder *enc;
