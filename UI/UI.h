@@ -7,7 +7,7 @@
 #ifndef ui_h
 #define ui_h
 
-class U8GLIB;
+//class U8GLIB;
 
 #include <Arduino.h>
 #include <U8glib.h>
@@ -16,7 +16,19 @@ class U8GLIB;
 #include <Digital_Light_TSL2561.h>
 #include <Encoder.h>
 #include <rtc_clock.h>
+
+#include "Alarm.h"
+
+//Menu stuff
 #include <Menu.h>
+#include <Clock_Menu.h>
+#include <Alarm_Menu.h>
+#include <Setup_Menu.h>
+
+class Alarm_Menu;
+class Clock_Menu;
+class Setup_Menu;
+
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -57,27 +69,14 @@ class UI {
     void update_input();
 
   private:
-    void draw_clock();
-    void enc_clock();
 
-    //Variables for ui_state = STATE_SETUP
-    int setup_state;
-    void draw_setup();
-    void enc_setup();
-
-    //Variables for ui_state = STATE_ALARM
-    int alarm_state;
-    void draw_alarm();
-    void enc_alarm();
-    int alarm_hour;
-    int alarm_minute;
-    boolean alarm_is_set;
-
-    //Variables for ui_state = STATE_LIGHTRGB
-    int lightrgb_state;
-    void draw_lightrgb();
-    void enc_lightrgb();
+    Clock_Menu* clockm;
+    Setup_Menu* setupm;
+    Alarm_Menu* alarmm;   
     
+    Alarm alarm;
+    
+    U8GLIB_LM6059_2X u8g;
     
     int ui_state;
     int dim; // has to be between 26 and 255 !
@@ -90,20 +89,6 @@ class UI {
     bool backlight;
 
     long lux;
-
-    // Variables for blinking colon
-    unsigned long interval;           // interval at which to blink (milliseconds)
-    unsigned long previousMillis;        // will store last time LED was updated
-    unsigned long currentMillis;
-
-    //variables responsible for blinking
-    boolean blink;
-    boolean blinkfast;
-
-    //transforms two number like 2 and 15 to 02:15
-    String time2str(int hour,int minute);
-    //converts a 2 decimal number to a String:  1 -> "01"
-    String dec2str(int dec);
 
     DS1307 clock;
     Encoder *enc;
