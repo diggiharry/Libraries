@@ -11,11 +11,12 @@
 #include "Encoder.h"
 #include <U8glib.h>
 #include <u8g.h>
+#include <Arduino.h>
 
 class Menu {
 
     public:
-        Menu(Encoder *encoder, U8GLIB *u8glib,int *parent_state);
+        Menu(Encoder *encoder, U8GLIB_LM6059_2X *u8glib,int *parent_state);
 
         virtual void draw();
         virtual void input();
@@ -32,8 +33,12 @@ class Menu {
         
     protected:
         Encoder *enc;
-        U8GLIB *u8g; 
+        U8GLIB_LM6059_2X *u8g; 
         int *p_state;
+        
+        static String time2str(int hour,int minute);
+        static String dec2str(int dec);
+        
 };
 
       
