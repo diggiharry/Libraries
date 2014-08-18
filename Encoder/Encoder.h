@@ -85,9 +85,12 @@ class Encoder {
         
         inline void check_value();
             
-        volatile int oversample;
-	volatile signed int encoder_oversample_value;
-        volatile int encoder_value;
+        //volatile int oversample;
+	//volatile signed int encoder_oversample_value;
+        //volatile int encoder_value;
+        int oversample;
+	signed int encoder_oversample_value;
+        int encoder_value;
        
 };
 
