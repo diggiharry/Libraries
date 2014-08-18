@@ -6,12 +6,6 @@
 #define BACKLIGHT_GREEN 6 
 #define BACKLIGHT_BLUE 7
 
-//static U8GLIB_LM6059_2X u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
-
-//Clock_Menu clockm = clockm(&enc,&u8g,&ui_state);
-//Setup_Menu setupm = setupm(&enc,&u8g,&ui_state);
-//Alarm_Menu alarmm = alarmm(&enc,&u8g,&ui_state);
-
 /*
  * Constructor
  */
@@ -47,7 +41,9 @@ UI::UI(Encoder *encoder,Fader *fader)
     alarmm = new Alarm_Menu(enc,&u8g,&ui_state,&alarm),
     setupm = new Setup_Menu(enc,&u8g,&ui_state); 
     lightm = new LightRGB_Menu(enc,&u8g,&ui_state,fade); 
-
+    settingsm = new Settings_Menu(enc,&u8g,&ui_state);
+    setclockm = new SetClock_Menu(enc,&u8g,&ui_state,due_clock, &clock);
+    soundm = new Sound_Menu(enc,&u8g,&ui_state);
 }
 
 /*
@@ -58,14 +54,14 @@ UI::UI(Encoder *encoder,Fader *fader)
 void UI::init() {
 	u8g.setColorIndex(1);         //BW Mode
 
-	//init DS1307
+	/*//init DS1307
 	//clock.begin();
 	clock.fillByYMD(2013,10,13); //Nov 13,2013
 	//clock.fillByHMS(19,25,30);
 	clock.fillByHMS(9,59,50);
 	clock.fillDayOfWeek(SUN);//Sunday
 	clock.setTime();//write time to the RTC chip
-
+         */
         due_clock->init();
         
         clock.getTime(); 
@@ -120,8 +116,17 @@ void UI::draw(void) {
             case STATE_ALARM:
                     alarmm->draw();
                     break;
-            case STATE_LIGHTRGB:
+           case STATE_LIGHTRGB:
                     lightm->draw();
+                    break;                    
+            case STATE_SETTINGS:
+                    settingsm->draw();
+                    break;
+            case STATE_SETCLOCK:
+                    setclockm->draw();
+                    break;                    
+            case STATE_SETSOUND:
+                    soundm->draw();
                     break;                  
 	}
   } while( u8g.nextPage() ); 
@@ -142,6 +147,16 @@ void UI::update_input() {
             case STATE_LIGHTRGB:
                     lightm->input();
                     break;
+           case STATE_SETTINGS:
+                    settingsm->input();
+                    break;
+            case STATE_SETCLOCK:
+                    setclockm->input();
+                    break;                    
+            case STATE_SETSOUND:
+                    soundm->input();
+                    break;                  
+                    
 	  }
 }
 

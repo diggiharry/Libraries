@@ -29,7 +29,12 @@ class Alarm_Menu;
 class Setup_Menu;
 #include <LightRGB_Menu.h>
 class LightRGB_Menu;
-
+#include <Settings_Menu.h>
+class Settings_Menu;
+#include <SetClock_Menu.h>
+class SetClock_Menu;
+#include <Sound_Menu.h>
+class Sound_Menu;
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -42,7 +47,10 @@ class LightRGB_Menu;
 #define STATE_SETUP 1
 #define STATE_ALARM 2
 #define STATE_LIGHTRGB 3
-#define STATE_LCDRGB 4
+#define STATE_SETTINGS 4
+#define STATE_SETCLOCK 5
+#define STATE_SETSOUND 6
+#define STATE_LCDRGB 7
 
 //define mpr121 buttons
 #define MPR121_MENU 1
@@ -75,6 +83,10 @@ class UI {
     Setup_Menu* setupm;
     Alarm_Menu* alarmm;   
     LightRGB_Menu* lightm;
+    Settings_Menu* settingsm;
+    SetClock_Menu* setclockm;
+    Sound_Menu* soundm;
+    
     
     Alarm alarm;
    

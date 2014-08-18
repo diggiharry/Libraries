@@ -1,33 +1,30 @@
 /* 
- * File:   Setup_Menu.cpp
+ * File:   Settings_Menu.cpp
  * Author: sei
  * 
- * Created on 15. August 2014, 19:31
+ * Created on 17. August 2014, 21:21
  */
 
-#include "Setup_Menu.h"
-#include "Menu.h"
+#include "Settings_Menu.h"
 
-
-Setup_Menu::Setup_Menu(Encoder *encoder,U8GLIB_LM6059_2X *u8glib,int *parent_state) : Menu(encoder,u8glib,parent_state) {
-    setup_state = 1;
-//
+Settings_Menu::Settings_Menu(Encoder *encoder,U8GLIB_LM6059_2X *u8glib,int *parent_state) : Menu(encoder,u8glib,parent_state) {
+    state = 1;
 }
 
-void Setup_Menu::input(void) {
-	setup_state = enc->getValue();
+void Settings_Menu::input(void) {
+	state = enc->getValue();
 
 	if (enc->isReleased()) {
-		switch(setup_state)
+		switch(state)
 		{
 		case 0:
-			*p_state = STATE_ALARM;
+			*p_state = STATE_SETCLOCK;
 			break;
 		case 1:
-			*p_state = STATE_LIGHTRGB;
+			*p_state = STATE_SETSOUND;
 			break;
 		case 2:
-			*p_state = STATE_SETTINGS;
+			*p_state = STATE_LCDRGB;
 			break;
 		case 3:
 			*p_state = STATE_CLOCK;
@@ -36,22 +33,22 @@ void Setup_Menu::input(void) {
 	}
 }
 
-void Setup_Menu::draw(void) {
+void Settings_Menu::draw(void) {
 	int y = 10;
 	int x = 20;
 
 	u8g->setFont(u8g_font_courR10);
 	u8g->setPrintPos(x,y);
-	u8g->print("Set Alarm");
+	u8g->print("Set Clock");
 	u8g->setPrintPos(x,y+15);
-	u8g->print("Light RGB");
+	u8g->print("Set Sound");
 	u8g->setPrintPos(x,y+30);
-	u8g->print("Settings");
+	u8g->print("Set LCD");
 	u8g->setPrintPos(x,y+45);
 	u8g->print("Exit");
 
 	u8g->setFont(u8g_font_symb14);
-	switch(setup_state)
+	switch(state)
 	{
 	case 0:
 		u8g->setPrintPos(0,y);

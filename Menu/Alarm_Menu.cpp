@@ -24,7 +24,7 @@ void Alarm_Menu::input(void) {
 	switch(alarm_state)
 	{
 	case -1:
-		enc->setBounds(1,24,10);
+		enc->setBounds(0,23,10);
 		enc->setValue(alarm->get_hour());
 		alarm_state = 0;
 		break;
