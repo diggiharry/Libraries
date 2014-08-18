@@ -8,7 +8,9 @@ Fader::Fader() {
     prev_millis = 0;
     dur = 0;
     start = 0;
-    target_state = IDLE;    
+    target_state = IDLE;  
+    count = -1;
+    section_duration = 0;
 }
 
 void Fader::init() {
@@ -27,7 +29,13 @@ void Fader::update(unsigned long ms) {
                     break;
             case    FADE_TO_COLOR:
                     fade_to_color();
-                    break;         
+                    break;     
+            case    SUNRISE:
+                    sunrise();
+                    break;
+            case    COLORWAVE:
+                    colorwave();
+                    break;                    
         }
     
     for (int h = 0;h<4;h++) {
@@ -80,20 +88,27 @@ void Fader::start_fade_to_color(int colors[12], unsigned long duration) {
     state = FADE_TO_COLOR;
     start = millis();
     prev_millis = start; 
+    fade_to_color();
 }
 
-int Fader::triangle_function(unsigned long ms,unsigned int period, int phase) {
-    return 1023 * 2 * abs(round( ( (float) ms+phase)/period)-( ( (float) ms+phase)/ period)) ;    
+
+void Fader::fade_out() {
+    int colors[12] = {  0,0,0, 0,0,0, 0,0,0, 0,0,0,}; 
+    start_fade_to_color(colors, 300);
+}
+
+float Fader::triangle_function(unsigned long ms,unsigned int period, int phase) {
+    return 2 * abs(round( ( (float) ms+phase)/period)-( ( (float) ms+phase)/ period)) ;    
 }
 
 void Fader::start_rainbow(int period, int phase1, int phase2) {
-    this->phase1 = phase1;
-    this->phase2 = phase2;
-    this->period = period;
+    rainbow_phase1 = phase1;
+    rainbow_phase2 = phase2;
+    rainbow_period = period;
     
-    int red = triangle_function(0,period,0);
-    int green = triangle_function(0,period,phase1);
-    int blue = triangle_function(0,period,phase2);
+    int red = 1023*triangle_function(0,period,0);
+    int green = 1023*triangle_function(0,period,phase1);
+    int blue = 1023*triangle_function(0,period,phase2);
     int start_values[12] = { red,green,0, 0,green,blue, red,0,blue, red,green,blue }; 
     start_fade_to_color(start_values,3000);
     target_state = RAINBOW;
@@ -102,13 +117,12 @@ void Fader::start_rainbow(int period, int phase1, int phase2) {
 
 void Fader::rainbow() {
     unsigned long diff_millis = millis() - start - 3000;
-    Serial.println(diff_millis);
     /*red = floor( 712+311 * (double)  cos(2*PI/period*ms) );
     green = floor( 712+311 * (double) cos(2*PI/period*(phase_green-ms)));
     blue = floor( 712+311 * (double) cos(2*PI/period*(phase_blue-ms)));*/
-    float red = triangle_function(diff_millis,period,0);
-    float green = triangle_function(diff_millis,period,phase1);
-    float blue = triangle_function(diff_millis,period,phase2);
+    float red = 1023*triangle_function(diff_millis,rainbow_period,0);
+    float green = 1023*triangle_function(diff_millis,rainbow_period,rainbow_phase1);
+    float blue = 1023*triangle_function(diff_millis,rainbow_period,rainbow_phase2);
 
     values[0] = red;
     values[1] = green;
@@ -126,6 +140,63 @@ void Fader::rainbow() {
     values[10] = green;
     values[11] = blue;
 }
+
+void Fader::start_sunrise(unsigned long duration) {
+    section_duration =  duration / 4 ;
+    count = 0;
+    state = SUNRISE; 
+    set_all(0,0,0);
+    sunrise();
+}
+
+void Fader::sunrise() {
+    int colors[12] = {  sunrise_col[count*3],sunrise_col[count*3+1],sunrise_col[count*3+2], 
+                        sunrise_col[count*3],sunrise_col[count*3+1],sunrise_col[count*3+2],
+                        sunrise_col[count*3],sunrise_col[count*3+1],sunrise_col[count*3+2],
+                        sunrise_col[count*3],sunrise_col[count*3+1],sunrise_col[count*3+2] };
+    /*for (int h = 0;h<4;h++) {
+        colors[h] =  sunrise_col[count];
+        colors[h+1] =  sunrise_col[count+1];
+        colors[h+2] =  sunrise_col[count+2];
+    }*/ 
+    start_fade_to_color(colors, section_duration);   
+    if (count < 4) target_state = SUNRISE;
+    count++;
+}
+
+
+
+void Fader::start_colorwave(int period) {
+    cw_period = period;
+    
+    float buf = 1;
+    float hue = 0;
+    for (int h = 0;h<4;h++) {
+        hue = triangle_function(0,cw_period,h*(cw_period/5));
+        hsvToRgb(hue,buf,buf,target_values+h*3);
+    }
+        int duration = 2000;
+        for (int h = 0;h<12;h++) {
+            slopes[h] = ( target_values[h] - values[h] ) / duration  ;
+        }
+        dur = duration;
+        target_state = COLORWAVE;
+        state = FADE_TO_COLOR;
+        start = millis();
+        prev_millis = start; 
+        fade_to_color();   
+}
+
+void Fader::colorwave() {
+    unsigned long diff_millis = millis() - start - 2000;
+    float buf = 1;
+    float hue = 0;
+    for (int h = 0;h<4;h++) {
+        hue = triangle_function(diff_millis,cw_period,h*(cw_period/5));
+        hsvToRgb(hue,buf,buf,values+h*3);
+    }
+}
+
 
 /**
 * 
@@ -185,20 +256,20 @@ void Fader::rainbow() {
 * Converts an HSV color value to RGB. Conversion formula
 * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
 * Assumes h, s, and v are contained in the set [0, 1] and
-* returns r, g, and b in the set [0, 255].
+* returns r, g, and b in the set [0, 1023].
 *
 * @param Number h The hue
 * @param Number s The saturation
 * @param Number v The value
 * @return Array The RGB representation
 */
-/*void Fader::hsvToRgb(double h, double s, double v, byte rgb[]) {
-    double r, g, b;
+void Fader::hsvToRgb(float h, float s, float v, float rgb[]) {
+    float r, g, b;
     int i = int(h * 6);
-    double f = h * 6 - i;
-    double p = v * (1 - s);
-    double q = v * (1 - f * s);
-    double t = v * (1 - (1 - f) * s);
+    float f = h * 6 - i;
+    float p = v * (1 - s);
+    float q = v * (1 - f * s);
+    float t = v * (1 - (1 - f) * s);
     switch(i % 6) {
         case 0: r = v, g = t, b = p; break;
         case 1: r = q, g = v, b = p; break;
@@ -207,7 +278,7 @@ void Fader::rainbow() {
         case 4: r = t, g = p, b = v; break;
         case 5: r = v, g = p, b = q; break;
     }
-    rgb[0] = r * 255;
-    rgb[1] = g * 255;
-    rgb[2] = b * 255;
-}*/
+    rgb[0] = r * 1023;
+    rgb[1] = g * 1023;
+    rgb[2] = b * 1023;
+}
