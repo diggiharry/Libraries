@@ -7,11 +7,7 @@
 #ifndef Music_h
 #define Music_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 
 #define UP HIGH
@@ -20,10 +16,18 @@
 #define ON HIGH
 #define OFF LOW
 
+/*
 #define playbotton A0
 #define nextbotton A1
 #define prevbotton A2
 #define powerbotton A3
+*/
+// For due :
+#define playbotton 54
+#define nextbotton 55
+#define prevbotton 56
+#define powerbotton 57
+
 
 class Music {
 	public:
