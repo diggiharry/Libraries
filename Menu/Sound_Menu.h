@@ -10,6 +10,10 @@
 
 #include <Menu.h>
 #include "UI.h"
+#include <Music.h>
+
+#define SOUND_VOLUME 0
+#define SOUND_TRACK 1
 
 class Sound_Menu : public Menu {
 public:
@@ -19,7 +23,7 @@ public:
     
 private:
     int state;
-
+    boolean make_input;
 };
 
 #endif	/* SOUND_MENU_H */

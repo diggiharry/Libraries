@@ -10,7 +10,7 @@
 
 
 Setup_Menu::Setup_Menu(Encoder *encoder,U8GLIB_LM6059_2X *u8glib,int *parent_state) : Menu(encoder,u8glib,parent_state) {
-    setup_state = 1;
+    setup_state = 0;
 //
 }
 

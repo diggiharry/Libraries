@@ -8,7 +8,7 @@
 #include "Settings_Menu.h"
 
 Settings_Menu::Settings_Menu(Encoder *encoder,U8GLIB_LM6059_2X *u8glib,int *parent_state) : Menu(encoder,u8glib,parent_state) {
-    state = 1;
+    state = 0;
 }
 
 void Settings_Menu::input(void) {
@@ -19,15 +19,19 @@ void Settings_Menu::input(void) {
 		{
 		case 0:
 			*p_state = STATE_SETCLOCK;
+                        state = 0;
 			break;
 		case 1:
 			*p_state = STATE_SETSOUND;
+                        state = 0;
 			break;
 		case 2:
 			*p_state = STATE_LCDRGB;
+                        state = 0;
 			break;
 		case 3:
-			*p_state = STATE_CLOCK;
+                        state = 0;
+                        *p_state = STATE_CLOCK;
 			break;
 		}
 	}
