@@ -52,6 +52,10 @@ UI::UI(Encoder *encoder,Fader *fader)
  * should be called in setup(), initializes all stuff and sets u8g parameters
  */
 void UI::init() {
+    
+        music.init();
+        //music.power(UP);
+        
 	u8g.setColorIndex(1);         //BW Mode
 
 	/*//init DS1307
@@ -73,6 +77,8 @@ void UI::init() {
 	analogWrite(BACKLIGHT_RED,   redVal);   // Write current values to LED pins
 	analogWrite(BACKLIGHT_GREEN, greenVal);
 	analogWrite(BACKLIGHT_BLUE,  blueVal);
+
+        music.pause();
 }
 
 void UI::switch_blink() {

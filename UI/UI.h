@@ -16,6 +16,7 @@
 #include <Digital_Light_TSL2561.h>
 #include <Encoder.h>
 #include <rtc_clock.h>
+#include <Music.h>
 #include "Fader.h"
 #include "Alarm.h"
 
