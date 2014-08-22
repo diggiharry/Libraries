@@ -9,9 +9,9 @@
 #include "Menu.h"
 
 
-Alarm_Menu::Alarm_Menu(Encoder *encoder,U8GLIB_LM6059_2X *u8glib,int *parent_state, Alarm *alarm) : Menu(encoder,u8glib,parent_state) {
-    alarm_state = -1;
+Alarm_Menu::Alarm_Menu(Widget *parent,Alarm *alarm) : Widget(parent) {
     this->alarm = alarm;
+    alarm_state = -1;   
 }
 
 /*
@@ -24,41 +24,45 @@ void Alarm_Menu::input(void) {
 	switch(alarm_state)
 	{
 	case -1:
-		enc->setBounds(0,23,10);
-		enc->setValue(alarm->get_hour());
-		alarm_state = 0;
-		break;
+            enc->setUndersample(10);
+            hour = alarm->get_hour();
+            alarm_state = 0;
+            break;
 	case 0:
-		alarm->set_hour(enc->getValue());
-		break;
+            hour += enc->getDirection();
+            hour = hour % 23;
+            alarm->set_hour(hour);
+            break;
 	case 1:
-		alarm->set_minute(enc->getValue());
-		break;
+            minute += enc->getDirection();
+            minute = hour % 59;
+            alarm->set_minute(minute);
+            break;
 	case 2:
-		alarm->set(enc->getValue());
-		break;
+            set = enc->getDirection();
+            if (set == -1) alarm->set(false);
+            if (set == 1) alarm->set(true);
+            break;
 	}
 
 	if (enc->isReleased()) {
-		switch(alarm_state)
-		{
-		case 0:
-			alarm_state = 1;
-			enc->setBounds(0,59,8);
-			enc->setValue(alarm->get_minute());
-			break;
-		case 1:
-			alarm_state = 2;
-			enc->setBounds(0,1,20);
-			enc->setValue(alarm->is_set());
-			break;
-		case 2:
-			*p_state = STATE_CLOCK;
-      			alarm_state = -1;
-			break;
-		}
+            switch(alarm_state)
+            {
+            case 0:
+                    alarm_state = 1;
+                    enc->setUndersample(8);
+                    minute = alarm->get_minute();
+                    break;
+            case 1:
+                    alarm_state = 2;
+                    enc->setUndersample(20);
+                    set = alarm->is_set();
+                    break;
+            case 2:
+                    this->release_input(true);
+                    break;
+            }
 	}
-
 }
 
 /*

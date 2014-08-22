@@ -8,21 +8,23 @@
 #ifndef ALARM_MENU_H
 #define	ALARM_MENU_H
 
-#include <Menu.h>
-#include "UI.h"
-#include "Encoder.h"
+#include <Widget.h>
 #include <Alarm.h>
 
-class Alarm_Menu : public Menu {
+class Alarm_Menu : public Widget {
 
     public:
-        Alarm_Menu(Encoder *encoder, U8GLIB_LM6059_2X *u8glib,int *parent_state,Alarm *alarm) ;
+        Alarm_Menu(Widget *parent, Alarm *alarm) ;
         void draw();
         void input();
 
     private:
-        int alarm_state;
         Alarm* alarm;
+        int alarm_state;
+        int hour;
+        int minute;
+        int set;
+        
 };
 
 #endif	/* ALARM_MENU_H */

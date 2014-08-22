@@ -9,9 +9,16 @@
 #include "Menu.h"
 
 
-Setup_Menu::Setup_Menu(Encoder *encoder,U8GLIB_LM6059_2X *u8glib,int *parent_state) : Menu(encoder,u8glib,parent_state) {
+Setup_Menu::Setup_Menu(Widget *parent)
+    : Menu(parent) 
+{
     setup_state = 0;
-//
+    for (int i = 0; i<4; i++) {
+        items[i] = new MenuItem(item_labels[i],this);        
+        this->add_child(items[i]);
+    }
+    
+    
 }
 
 void Setup_Menu::input(void) {

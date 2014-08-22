@@ -8,14 +8,13 @@
 #ifndef SETCLOCK_MENU_H
 #define	SETCLOCK_MENU_H
 
-#include <Menu.h>
-#include "UI.h"
+#include <Widget.h>
 #include <DS1307.h>
 #include <rtc_clock.h>
 
-class SetClock_Menu : public Menu {
+class SetClock_Menu : public Widget {
 public:
-    SetClock_Menu(Encoder *encoder, U8GLIB_LM6059_2X *u8glib,int *parent_state, RTC_clock* due_clock, DS1307* ext_clock);
+    SetClock_Menu(Widget *parent, RTC_clock* due_clock, DS1307* ext_clock);
     void draw();
     void input();
     

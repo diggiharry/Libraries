@@ -8,18 +8,23 @@
 #ifndef SETUP_MENU_H
 #define	SETUP_MENU_H
 
-#include <Menu.h>
+#include <Container.h>
+#include <../Widgets/MenuItem.h>
 #include "UI.h"
 
 class Setup_Menu : public Menu {
 public:
-    Setup_Menu(Encoder *encoder, U8GLIB_LM6059_2X *u8glib,int *parent_state);
+    Setup_Menu(Widget *parent);
+    
     void draw();
     void input();
     
 private:
-    int setup_state;
-
+    Widget *selected;
+    
+    const String item_labels[4] = {"Set Alarm","Set Lights","Settings","Exit"};
+    MenuItem items[4];
+            
 };
 
 #endif	/* SETUP_MENU_H */

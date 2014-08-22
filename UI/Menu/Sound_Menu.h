@@ -8,14 +8,14 @@
 #ifndef SOUND_MENU_H
 #define	SOUND_MENU_H
 
-#include <Menu.h>
+#include <Widget.h>
 #include "UI.h"
-#include <Music.h>
+
 
 #define SOUND_VOLUME 0
 #define SOUND_TRACK 1
 
-class Sound_Menu : public Menu {
+class Sound_Menu : public Widget {
 public:
     Sound_Menu(Encoder *encoder, U8GLIB_LM6059_2X *u8glib,int *parent_state);
     void draw();
