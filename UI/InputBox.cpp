@@ -46,7 +46,6 @@ void InputBox::input(void)
     
     if (enc->isReleased()) {
         parent->claim_input(); 
-        this->input_claimed = false;
     }    
 }
 

@@ -19,7 +19,7 @@
 #include "Fader.h"
 #include "Alarm.h"
 
-#include <Widget.h>
+//#include <Widget.h>
 #include <Menu.h>
 #include <Clock_Face.h>
 #include <Alarm_Menu.h>
@@ -44,10 +44,10 @@
 //define mpr121 buttons
 #define MPR121_MENU 1
 
-class UI : public Widget {
+class UI {
   public:
 
-    UI(Encoder *encoder, Fader *fader);
+    UI(Encoder *encoder, Fader *fader, U8G_CLASS *u8g);
     void draw();
     void input();
 
@@ -64,6 +64,7 @@ class UI : public Widget {
 
   private:
 
+    Widget *root;
     Menu *setup; 
     Clock_Face *clockface;
     Alarm_Menu *alarmm;
@@ -71,7 +72,7 @@ class UI : public Widget {
         
     Alarm *alarm;
    
-    U8GLIB_LM6059_2X *u8g;
+    U8G_CLASS *u8g;
     
     int dim; // has to be between 26 and 255 !
     int redVal; // Variables to store the values to send to the pins
@@ -84,6 +85,8 @@ class UI : public Widget {
 
     long lux;
 
+    Encoder *enc;
+    
     DS1307 clock;
 
     Fader *fade;

@@ -19,7 +19,7 @@ class Widget;
 Widget::Widget(Encoder *encoder,U8G_CLASS *u8glib) {
     this->enc = encoder;
     this->u8g = u8glib; 
-    this->parent = 0;
+    this->parent = this;   
     init();
 }
 
@@ -31,8 +31,8 @@ Widget::Widget(Encoder *encoder,U8G_CLASS *u8glib) {
  }
 
 void Widget::init() {
-    visible = false;
-    input_claimed = false;
+    //Widget::has_input = this;
+    //Widget::is_drawn = this;
     x = 0;
     y = 0;
     width = 0;
@@ -107,9 +107,21 @@ static String Widget::dec2str(int dec) {
 }
 
 void Widget::draw() {
-    
+    u8g->setFont(u8g_font_symb14); 
+    u8g->setPrintPos(50,50);    
 }
 
 void Widget::input() {
     
+}
+
+static void Widget::draw_active_Widget() {
+    (*Widget::is_drawn.*draw)();
+    //(*is_drawn.*draw)();
+    Serial.println("draw");
+    //Widget::is_drawn->draw();
+}
+
+static void Widget::input_active_Widget() {
+    Widget::has_input->input();
 }

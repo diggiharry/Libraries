@@ -14,6 +14,15 @@ Clock_Face::Clock_Face(Widget *parent, Alarm* alarm, RTC_clock* clock)
     this->clock = clock;
 }
 
+Clock_Face::Clock_Face(Encoder *encoder,U8G_CLASS *u8glib, Alarm* alarm, RTC_clock* clock)
+    : Widget(encoder, u8glib)
+{
+    this->enc = encoder;
+    this->u8g = u8glib; 
+    this->alarm = alarm;
+    this->clock = clock;
+}
+
 void Clock_Face::input(void) {
   
 }
@@ -25,6 +34,8 @@ void Clock_Face::input(void) {
  */
 void Clock_Face::draw(void) {
    
+    Serial.println(x);
+    
     int time_y = 47;
     int time_x = 10;
 

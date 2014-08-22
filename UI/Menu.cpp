@@ -7,16 +7,17 @@
 
 #include "Menu.h"
 
-Menu::Menu(Widget *parent, LinkedList<String*> labels) 
+Menu::Menu(Widget *parent, LinkedList<String*> *labels) 
     : Widget(parent) 
 {
     children = LinkedList<MenuItem*>();
     
     MenuItem *item;
-    for (int i = 0; i<labels.size(); i++) {
-        item = new MenuItem(*labels.get(i), this); 
+    for (int i = 0; i<labels->size(); i++) {
+        item = new MenuItem(*labels->get(i), this); 
         item->set_pos(x+10,y+10+i*(item->get_height()+4)-2);
         children.add(item);
+        item = 0;
     }    
     num_items = children.size();
     active_item = 0;    
@@ -39,7 +40,6 @@ void Menu::input(void) {
 }
 
 void Menu::draw(void) {
-    if (visible)
     for (int i = 0; i<num_items; i++) {
         children.get(i)->draw();
         
@@ -49,6 +49,6 @@ void Menu::draw(void) {
         }
 
     } 
-
+    u8g->print( (char) 174);
 }
 

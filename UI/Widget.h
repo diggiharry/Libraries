@@ -40,8 +40,12 @@ public:
 
     static boolean blink;
     static boolean blinkfast;    
-  
-    boolean visible;
+ 
+    static Widget *has_input;
+    static Widget *is_drawn;
+
+    static void draw_active_Widget();
+    static void input_active_Widget();
         
 protected:
     Encoder *enc;
@@ -52,14 +56,9 @@ protected:
     int x,y;
     int height,width;
     
-    boolean input_claimed;
- 
     static String time2str(int hour,int minute);
     static String dec2str(int dec);
-
-    static Widget *has_input;
-    static Widget *is_drawn;
-
+   
 private:
     void init();
 };

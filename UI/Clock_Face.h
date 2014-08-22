@@ -15,6 +15,7 @@
 class Clock_Face : public Widget {
 public:
     Clock_Face(Widget *parent, Alarm* alarm, RTC_clock* clock);
+    Clock_Face(Encoder *encoder,U8G_CLASS *u8glib, Alarm* alarm, RTC_clock* clock);
 
     void draw();
     void input();

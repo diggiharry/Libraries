@@ -9,8 +9,7 @@
 /*
  * Constructor
  */
-UI::UI(Encoder *encoder,Fader *fader) 
-    :   Widget(encoder, u8g)
+UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g) 
 {
     dim = 255; // has to be between 26 and 255 !
     redVal = 255; // Variables to store the values to send to the pins
@@ -21,10 +20,11 @@ UI::UI(Encoder *encoder,Fader *fader)
     phase_blue = 1000;
     period = 50000;
 
-    backlight = true;
     pinMode(BACKLIGHT_RED,   OUTPUT);   // sets the pins as output
     pinMode(BACKLIGHT_GREEN, OUTPUT);
     pinMode(BACKLIGHT_BLUE,  OUTPUT);
+   
+    backlight = true;
 
     lux = 0;
 
@@ -32,31 +32,28 @@ UI::UI(Encoder *encoder,Fader *fader)
         
     fade = fader;
     
-    u8g = &U8GLIB_LM6059_2X(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
+    //u8g = &U8G_CLASS(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
+    this->u8g = u8g;
     
     due_clock = &RTC_clock(XTAL);
-
+   
     alarm = new Alarm();
+   
+    clockface = new Clock_Face(enc, u8g, alarm, due_clock); 
+    clockface->claim_draw(); 
+    clockface->claim_input();
     
-    this->parent = this;
-    this->claim_input();
-    
-    // create Setup Menu
+    // create Setup Menu       
     LinkedList<String*> labels = LinkedList<String*>();
     labels.add(new String("Set Alarm"));
     labels.add(new String("Set Lights"));
     labels.add(new String("Settings"));
     labels.add(new String("Done"));
-    setup = new Menu(this,labels);
+    setup = new Menu(clockface,&labels);
     
-    alarmm = new Alarm_Menu(this,alarm);
+    alarmm = new Alarm_Menu(clockface,alarm);
     
     setup->add_action(0,alarmm);
-    setup->visible = true;
-    
-    clockface = new Clock_Face(this,alarm,due_clock); 
-    clockface->claim_draw();
-    
 }
 
 /*
@@ -66,7 +63,7 @@ UI::UI(Encoder *encoder,Fader *fader)
  */
 void UI::init() {
             
-	u8g->setColorIndex(1);         //BW Mode
+	//u8g->setColorIndex(1);         //BW Mode
 
         due_clock->init();
         
@@ -78,7 +75,7 @@ void UI::init() {
          
 	analogWrite(BACKLIGHT_RED,   redVal);   // Write current values to LED pins
 	analogWrite(BACKLIGHT_GREEN, greenVal);
-	analogWrite(BACKLIGHT_BLUE,  blueVal);
+	analogWrite(BACKLIGHT_BLUE,  blueVal);       
 }
 
 void UI::getTime() {
@@ -87,9 +84,9 @@ void UI::getTime() {
 }
 
 void UI::getLux() {
-	// get LUX from Digital_Light_TSL2561
-	  TSL2561.getLux();
-	  lux = TSL2561.calculateLux(0,0,1);
+    // get LUX from Digital_Light_TSL2561
+    TSL2561.getLux();
+    lux = TSL2561.calculateLux(0,0,1);
 }
 
 /*
@@ -99,18 +96,19 @@ void UI::getLux() {
  * should be called in loop(), or with a timer
  */
 void UI::draw(void) {
-
-  // picture loop
-  u8g->firstPage();  
-  do {      
-      is_drawn->draw();
-  } while( u8g->nextPage() ); 
-  
-  cycleRBG(millis());
+    // picture loop
+    u8g->firstPage();  
+    do {             
+        //Widget buf = clockface->is_drawn;
+        //buf.draw();        
+        Widget::draw_active_Widget();
+        u8g->drawFrame(10,10,118,54);
+    } while( u8g->nextPage() ); 
+    cycleRBG(millis());
 }
 
 void UI::input() {
-    has_input->input();
+    Widget::input_active_Widget();
 }
 
 /*
@@ -118,8 +116,7 @@ void UI::input() {
  *
  * function for cycling through the colors of the backlight
  */
-void UI::cycleRBG(long ms) {
- 
+void UI::cycleRBG(long ms) { 
 	redVal = floor( 128 + 127 * (double)  cos(2*PI/period*ms) );
 	greenVal = floor( 128 + 127 * (double) cos(2*PI/period*(phase_green-ms)));
 	blueVal = floor( 128 + 127 * (double) cos(2*PI/period*(phase_blue-ms)));
