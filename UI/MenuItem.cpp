@@ -7,21 +7,14 @@
 
 #include "MenuItem.h"
 
-MenuItem::MenuItem(Widget *target, Encoder *encoder, U8G_CLASS *u8glib, String label)
-    : Widget(encoder, u8glib) 
-{
-    this->label = label;
-    this->target = target;
-}
-
-MenuItem::MenuItem(Widget *target, Widget *parent)
+MenuItem::MenuItem(Widget *target,String label, Widget *parent)
     : Widget(parent) 
 {
     this->label = label;
     this->target = target;
 }
 
-MenuItem::MenuItem(Widget *parent)
+MenuItem::MenuItem(String label, Widget *parent)
     : Widget(parent) 
 {
     this->label = label;

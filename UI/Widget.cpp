@@ -7,6 +7,15 @@
 
 #include "Widget.h"
 
+static Widget *Widget::has_input;
+static Widget *Widget::is_drawn;
+
+static boolean Widget::blink;
+static boolean  Widget::blinkfast;
+
+class Widget;
+
+
 Widget::Widget(Encoder *encoder,U8G_CLASS *u8glib) {
     this->enc = encoder;
     this->u8g = u8glib; 
@@ -40,11 +49,11 @@ int Widget::get_height() {
 }
 
 void Widget::claim_input() {
-    has_input = this;
+    Widget::has_input = this;
 }   
 
 void Widget::claim_draw() {
-    is_drawn = this;
+    Widget::is_drawn = this;
 } 
 
 void Widget::release_input(boolean pass_down = false) {
@@ -95,4 +104,12 @@ static String Widget::dec2str(int dec) {
 		}
 		return n;
 	} else return String("na");
+}
+
+void Widget::draw() {
+    
+}
+
+void Widget::input() {
+    
 }

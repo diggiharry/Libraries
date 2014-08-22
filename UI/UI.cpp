@@ -10,14 +10,12 @@
  * Constructor
  */
 UI::UI(Encoder *encoder,Fader *fader) 
-    :   Widget(encoder, &u8g),  
-        u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST),
-        alarm()
+    :   Widget(encoder, u8g)
 {
     dim = 255; // has to be between 26 and 255 !
-    redVal = 0; // Variables to store the values to send to the pins
-    greenVal = 0;   // Initial values are Red full, Green and Blue off
-    blueVal = 0;
+    redVal = 255; // Variables to store the values to send to the pins
+    greenVal = 255;   // Initial values are Red full, Green and Blue off
+    blueVal = 255;
 
     phase_green = 500;
     phase_blue = 1000;
@@ -31,11 +29,15 @@ UI::UI(Encoder *encoder,Fader *fader)
     lux = 0;
 
     enc = encoder;
-    
+        
     fade = fader;
+    
+    u8g = &U8GLIB_LM6059_2X(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
     
     due_clock = &RTC_clock(XTAL);
 
+    alarm = new Alarm();
+    
     this->parent = this;
     this->claim_input();
     
@@ -47,12 +49,12 @@ UI::UI(Encoder *encoder,Fader *fader)
     labels.add(new String("Done"));
     setup = new Menu(this,labels);
     
-    alarmm = new Alarm_Menu(this,&alarm);
+    alarmm = new Alarm_Menu(this,alarm);
     
     setup->add_action(0,alarmm);
     setup->visible = true;
     
-    clockface = new Clock_Face(this,&alarm,due_clock); 
+    clockface = new Clock_Face(this,alarm,due_clock); 
     clockface->claim_draw();
     
 }
@@ -64,7 +66,7 @@ UI::UI(Encoder *encoder,Fader *fader)
  */
 void UI::init() {
             
-	u8g.setColorIndex(1);         //BW Mode
+	u8g->setColorIndex(1);         //BW Mode
 
         due_clock->init();
         
@@ -99,14 +101,16 @@ void UI::getLux() {
 void UI::draw(void) {
 
   // picture loop
-  u8g.firstPage();  
+  u8g->firstPage();  
   do {      
-      is_drawn.draw();
-  } while( u8g.nextPage() ); 
+      is_drawn->draw();
+  } while( u8g->nextPage() ); 
+  
+  cycleRBG(millis());
 }
 
 void UI::input() {
-    has_input.input();
+    has_input->input();
 }
 
 /*

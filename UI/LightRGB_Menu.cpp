@@ -72,7 +72,6 @@ void LightRGB_Menu::input(void) {
  */
 void LightRGB_Menu::draw(void) {
 
-
     switch(state)
     {
         case SELECT_MODE:

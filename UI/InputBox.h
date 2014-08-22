@@ -21,6 +21,8 @@ public:
     
     int get_value();
     
+    static int numDigits(int number);
+    
 private:
     String label;
     int max;

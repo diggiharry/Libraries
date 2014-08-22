@@ -20,8 +20,8 @@ public:
     Widget(Encoder *encoder,U8G_CLASS *u8glib);
     Widget(Widget *parent);
     
-    virtual void draw();
-    virtual void input();
+    void draw();
+    void input();
     
     void claim_input();
     void claim_draw();
@@ -57,12 +57,13 @@ protected:
     static String time2str(int hour,int minute);
     static String dec2str(int dec);
 
-    static Widget has_input;
-    static Widget is_drawn;
+    static Widget *has_input;
+    static Widget *is_drawn;
 
 private:
     void init();
 };
+
 
 #endif	/* WIDGET_H */
 

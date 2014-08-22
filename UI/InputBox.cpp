@@ -23,11 +23,11 @@ void InputBox::claim_input()
     
     int diff = max - min;
     if (diff <= 32) {
-        enc.setUndersample( 32 / diff );
+        enc->setUndersample( 32 / diff );
     } else if (diff <= 100) {
-        enc.setUndersample(2);
+        enc->setUndersample(2);
     } else {
-        enc.setUndersample(1);      
+        enc->setUndersample(1);      
     }
 }
 
@@ -70,7 +70,7 @@ void InputBox::draw(void)
     u8g->print(value);    
 }
 
-int numDigits(int number)
+static int InputBox::numDigits(int number)
 {
     int digits = 0;
     if (number < 0) digits = 1; // remove this line if '-' counts as a digit

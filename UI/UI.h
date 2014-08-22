@@ -68,11 +68,10 @@ class UI : public Widget {
     Clock_Face *clockface;
     Alarm_Menu *alarmm;
     LightRGB_Menu *lightm;
-    
-    
-    Alarm alarm;
+        
+    Alarm *alarm;
    
-    U8GLIB_LM6059_2X u8g;
+    U8GLIB_LM6059_2X *u8g;
     
     int dim; // has to be between 26 and 255 !
     int redVal; // Variables to store the values to send to the pins

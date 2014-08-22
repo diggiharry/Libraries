@@ -8,11 +8,11 @@
 #ifndef MENU_H
 #define	MENU_H
 
-#include <Container.h>
-#include <../Widgets/MenuItem.h>
+#include <Widget.h>
+#include <MenuItem.h>
 #include <LinkedList.h>
 
-class Menu : public Container {
+class Menu : public Widget {
 public:
     Menu(Widget *parent, LinkedList<String*> labels);
     
@@ -24,6 +24,9 @@ public:
 private:
     int num_items;
     int active_item; 
+    
+    LinkedList<MenuItem*> children; 
+
 };
 
 #endif	/* MENU_H */

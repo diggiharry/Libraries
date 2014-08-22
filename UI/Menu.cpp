@@ -8,26 +8,28 @@
 #include "Menu.h"
 
 Menu::Menu(Widget *parent, LinkedList<String*> labels) 
-    : Container(parent) 
+    : Widget(parent) 
 {
-    MenuItem item;
+    children = LinkedList<MenuItem*>();
+    
+    MenuItem *item;
     for (int i = 0; i<labels.size(); i++) {
-        item = new MenuItem(labels.get(i),this); 
-        item.set_pos(x+10,y+10+i*(item.get_height()+4)-2);
+        item = new MenuItem(*labels.get(i), this); 
+        item->set_pos(x+10,y+10+i*(item->get_height()+4)-2);
         children.add(item);
     }    
-    num_items = children.set();
+    num_items = children.size();
     active_item = 0;    
 }
 
 void Menu::add_action(int item, Widget *target) {
-    MenuItem item = children.get(item);
-    item.set_target(target);
+    MenuItem *buf = children.get(item);
+    buf->set_target(target);
 }
 
 void Menu::input(void) {
     
-    active_item += enc.getDirection();
+    active_item += enc->getDirection();
     
     active_item %= num_items;
   

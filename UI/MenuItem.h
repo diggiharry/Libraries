@@ -12,14 +12,13 @@
 
 class MenuItem : public Widget {
 public:
-    MenuItem(Widget *target, Encoder *encoder, U8G_CLASS *u8glib, String label);
     MenuItem(Widget *target, String label, Widget *parent);
     MenuItem(String label, Widget *parent);
 
     void input();
     void draw();
     
-    void set_target(Widget target);
+    void set_target(Widget *target);
     
 protected:
     String label;
