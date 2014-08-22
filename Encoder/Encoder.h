@@ -48,7 +48,7 @@ const unsigned char ttable[7][4] = {
 
 class Encoder {
   public:
-	Encoder(int button_pin,int A_pin,int B_pin, int min_value, int max_value);
+	Encoder(int button_pin,int A_pin,int B_pin);
 
 	//must be attached to interrupt of A and B
 	void updateEncoder_A();
@@ -58,15 +58,13 @@ class Encoder {
 
 	void Init();
 
-	int getValue();
-
-	void setBounds(int min_value, int max_value, int oversampling);
-
-	void setValue(int Value);
+	void setUndersample(int undersample);
 
 	boolean isPressed();
 
 	boolean isReleased();
+        
+        int getDirection();
 
   private:
 
@@ -85,13 +83,8 @@ class Encoder {
         
         inline void check_value();
             
-        //volatile int oversample;
-	//volatile signed int encoder_oversample_value;
-        //volatile int encoder_value;
-        int oversample;
-	signed int encoder_oversample_value;
+        int undersample;
         int encoder_value;
-       
 };
 
 

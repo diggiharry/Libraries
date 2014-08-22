@@ -10,28 +10,24 @@ More info: http://www.buxtronix.net/2011/10/rotary-encoders-done-properly.html
 #include "Encoder.h"
 
 
-Encoder::Encoder(int A_pin, int B_pin,int button_pin,int min_value, int max_value) {
+Encoder::Encoder(int A_pin, int B_pin,int button_pin) {
 	button = button_pin;
 	A = A_pin;
 	B = B_pin;
-	encoder_value = min_value;
-        oversample = 7;
-      	encoder_oversample_value = 0;
+	encoder_value = 0;
+        undersample = 7;
 	A_old = 0;
 	B_new = 0;
-	max = max_value;
-	min = min_value;
+	max = 2048;
+	min = -2048;
 	buttonState = false;
 	lastbuttonState = false;
 }
 
-void Encoder::setBounds(int min_value, int max_value, int oversampling) {
-	encoder_value = min_value;
-	min = min_value;
-	max = max_value;
-        oversample = oversampling;
-      	encoder_oversample_value = 0;
-        
+void Encoder::setUndersample(int undersample) {
+        this->undersample = undersample;
+      	if (undersample < 1) undersample = 1;
+        encoder_value = 0;        
 }
 
 boolean Encoder::isPressed() {
@@ -46,6 +42,25 @@ boolean Encoder::isReleased() {
 		}
 	}
 	return false;
+}
+
+
+/* Function getDirection
+ * 
+ * returns the direction the Encoder was turned, 1 for right, -1 for left 
+ * and 0 if it wasn't turned
+ * 
+ */
+int Encoder::getDirection() {
+    int dir = 0;
+    if (encoder_value >= undersample) {
+        encoder_value = 0;
+        dir = 1;        
+    } else if (encoder_value <= -undersample) {
+        encoder_value = 0;
+        dir = -1;        
+    }     
+    return dir;
 }
 
 void Encoder::Init() {
@@ -63,43 +78,23 @@ void Encoder::Init() {
 }
 
 inline void Encoder::check_value() {
-    if (encoder_oversample_value >= oversample) {
-        encoder_value++;
-        encoder_oversample_value = 0;
-    }
-    
-    if (encoder_oversample_value <= -oversample) {
-        encoder_value--;
-        encoder_oversample_value = 0;
-    }    
-    
     if (encoder_value > max) encoder_value = min;
     if (encoder_value < min) encoder_value = max;  
 }
 
 void Encoder::updateEncoder_A(){
-	B_new^A_old ? encoder_oversample_value++:encoder_oversample_value--;
+	B_new^A_old ? encoder_value++:encoder_value--;
 	A_old=digitalRead(A);
         check_value();        
 }
 
 void Encoder::updateEncoder_B(){
 	B_new=digitalRead(B);
-	B_new^A_old ? encoder_oversample_value++:encoder_oversample_value--;
+	B_new^A_old ? encoder_value++:encoder_value--;
         check_value();
 }
 
 void Encoder::updateButton() {
 	lastbuttonState = buttonState;
 	buttonState = !digitalRead(button);
-}
-
-int Encoder::getValue() {
-	return encoder_value;
-}
-
-void Encoder::setValue(int Value) {
-	if (Value <= (max))
-		if (Value >= (min))
-			encoder_value = Value;
 }

@@ -16,26 +16,14 @@
 #include <Digital_Light_TSL2561.h>
 #include <Encoder.h>
 #include <rtc_clock.h>
-#include <Music.h>
 #include "Fader.h"
 #include "Alarm.h"
 
-//Menu stuff
+#include <Widget.h>
 #include <Menu.h>
-#include <Clock_Menu.h>
-class Clock_Menu;
+#include <Clock_Face.h>
 #include <Alarm_Menu.h>
-class Alarm_Menu;
-#include <Setup_Menu.h>
-class Setup_Menu;
 #include <LightRGB_Menu.h>
-class LightRGB_Menu;
-#include <Settings_Menu.h>
-class Settings_Menu;
-#include <SetClock_Menu.h>
-class SetClock_Menu;
-#include <Sound_Menu.h>
-class Sound_Menu;
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -56,12 +44,15 @@ class Sound_Menu;
 //define mpr121 buttons
 #define MPR121_MENU 1
 
-class UI {
+class UI : public Widget {
   public:
 
     UI(Encoder *encoder, Fader *fader);
     void draw();
+    void input();
+
     void init();
+   
     void cycleRBG(long ms);
 
     void getTime();
@@ -71,29 +62,18 @@ class UI {
    
     void getLux();
 
-    //function has to be called in main programm at a period of 500ms
-    //it is used to let stuff on the display blink
-    void switch_blink();
-    void switch_blinkfast();
-
-    void update_input();
-
   private:
 
-    Clock_Menu* clockm;
-    Setup_Menu* setupm;
-    Alarm_Menu* alarmm;   
-    LightRGB_Menu* lightm;
-    Settings_Menu* settingsm;
-    SetClock_Menu* setclockm;
-    Sound_Menu* soundm;
+    Menu *setup; 
+    Clock_Face *clockface;
+    Alarm_Menu *alarmm;
+    LightRGB_Menu *lightm;
     
     
     Alarm alarm;
    
     U8GLIB_LM6059_2X u8g;
     
-    int ui_state;
     int dim; // has to be between 26 and 255 !
     int redVal; // Variables to store the values to send to the pins
     int greenVal;   // Initial values are Red full, Green and Blue off
@@ -106,7 +86,7 @@ class UI {
     long lux;
 
     DS1307 clock;
-    Encoder *enc;
+
     Fader *fade;
 
     RTC_clock *due_clock;

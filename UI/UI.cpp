@@ -10,24 +10,23 @@
  * Constructor
  */
 UI::UI(Encoder *encoder,Fader *fader) 
-    :   u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST),
+    :   Widget(encoder, &u8g),  
+        u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST),
         alarm()
 {
-	ui_state = STATE_CLOCK;
-        
-        dim = 255; // has to be between 26 and 255 !
-	redVal = 0; // Variables to store the values to send to the pins
-	greenVal = 0;   // Initial values are Red full, Green and Blue off
-	blueVal = 0;
+    dim = 255; // has to be between 26 and 255 !
+    redVal = 0; // Variables to store the values to send to the pins
+    greenVal = 0;   // Initial values are Red full, Green and Blue off
+    blueVal = 0;
 
-	phase_green = 500;
-	phase_blue = 1000;
-	period = 50000;
+    phase_green = 500;
+    phase_blue = 1000;
+    period = 50000;
 
-	backlight = true;
-	pinMode(BACKLIGHT_RED,   OUTPUT);   // sets the pins as output
-	pinMode(BACKLIGHT_GREEN, OUTPUT);
-	pinMode(BACKLIGHT_BLUE,  OUTPUT);
+    backlight = true;
+    pinMode(BACKLIGHT_RED,   OUTPUT);   // sets the pins as output
+    pinMode(BACKLIGHT_GREEN, OUTPUT);
+    pinMode(BACKLIGHT_BLUE,  OUTPUT);
 
     lux = 0;
 
@@ -36,14 +35,26 @@ UI::UI(Encoder *encoder,Fader *fader)
     fade = fader;
     
     due_clock = &RTC_clock(XTAL);
+
+    this->parent = this;
+    this->claim_input();
     
-    clockm = new Clock_Menu(enc,&u8g,&ui_state,due_clock, &alarm); 
-    alarmm = new Alarm_Menu(enc,&u8g,&ui_state,&alarm),
-    setupm = new Setup_Menu(enc,&u8g,&ui_state); 
-    lightm = new LightRGB_Menu(enc,&u8g,&ui_state,fade); 
-    settingsm = new Settings_Menu(enc,&u8g,&ui_state);
-    setclockm = new SetClock_Menu(enc,&u8g,&ui_state,due_clock, &clock);
-    soundm = new Sound_Menu(enc,&u8g,&ui_state);
+    // create Setup Menu
+    LinkedList<String*> labels = LinkedList<String*>();
+    labels.add(new String("Set Alarm"));
+    labels.add(new String("Set Lights"));
+    labels.add(new String("Settings"));
+    labels.add(new String("Done"));
+    setup = new Menu(this,labels);
+    
+    alarmm = new Alarm_Menu(this,&alarm);
+    
+    setup->add_action(0,alarmm);
+    setup->visible = true;
+    
+    clockface = new Clock_Face(this,&alarm,due_clock); 
+    clockface->claim_draw();
+    
 }
 
 /*
@@ -52,20 +63,9 @@ UI::UI(Encoder *encoder,Fader *fader)
  * should be called in setup(), initializes all stuff and sets u8g parameters
  */
 void UI::init() {
-    
-        music.init();
-        //music.power(UP);
-        
+            
 	u8g.setColorIndex(1);         //BW Mode
 
-	/*//init DS1307
-	//clock.begin();
-	clock.fillByYMD(2013,10,13); //Nov 13,2013
-	//clock.fillByHMS(19,25,30);
-	clock.fillByHMS(9,59,50);
-	clock.fillDayOfWeek(SUN);//Sunday
-	clock.setTime();//write time to the RTC chip
-         */
         due_clock->init();
         
         clock.getTime(); 
@@ -77,16 +77,6 @@ void UI::init() {
 	analogWrite(BACKLIGHT_RED,   redVal);   // Write current values to LED pins
 	analogWrite(BACKLIGHT_GREEN, greenVal);
 	analogWrite(BACKLIGHT_BLUE,  blueVal);
-
-        music.pause();
-}
-
-void UI::switch_blink() {
-    Menu::switch_blink();
-}
-
-void UI::switch_blinkfast() {
-    Menu::switch_blinkfast();
 }
 
 void UI::getTime() {
@@ -110,60 +100,13 @@ void UI::draw(void) {
 
   // picture loop
   u8g.firstPage();  
-  do {
-	  switch(ui_state)
-	  {
-            case STATE_CLOCK:
-                    clockm->draw();
-                    break;
-            case STATE_SETUP:
-                    setupm->draw();
-                    break;
-            case STATE_ALARM:
-                    alarmm->draw();
-                    break;
-           case STATE_LIGHTRGB:
-                    lightm->draw();
-                    break;                    
-            case STATE_SETTINGS:
-                    settingsm->draw();
-                    break;
-            case STATE_SETCLOCK:
-                    setclockm->draw();
-                    break;                    
-            case STATE_SETSOUND:
-                    soundm->draw();
-                    break;                  
-	}
+  do {      
+      is_drawn.draw();
   } while( u8g.nextPage() ); 
 }
 
-void UI::update_input() {
-	switch(ui_state)
-	  {
-            case STATE_CLOCK:
-                    clockm->input();
-                    break;
-            case STATE_SETUP:
-                    setupm->input();
-                    break;
-            case STATE_ALARM:
-                    alarmm->input();
-                    break;
-            case STATE_LIGHTRGB:
-                    lightm->input();
-                    break;
-           case STATE_SETTINGS:
-                    settingsm->input();
-                    break;
-            case STATE_SETCLOCK:
-                    setclockm->input();
-                    break;                    
-            case STATE_SETSOUND:
-                    soundm->input();
-                    break;                  
-                    
-	  }
+void UI::input() {
+    has_input.input();
 }
 
 /*
