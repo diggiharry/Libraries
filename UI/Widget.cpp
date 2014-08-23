@@ -7,16 +7,14 @@
 
 #include "Widget.h"
 
-static Widget *Widget::has_input;
-static Widget *Widget::is_drawn;
-
 static boolean Widget::blink;
 static boolean  Widget::blinkfast;
 
 class Widget;
 
 
-Widget::Widget(Encoder *encoder,U8G_CLASS *u8glib) {
+Widget::Widget(Base *base, Encoder *encoder,U8G_CLASS *u8glib) {
+    this->base = base;
     this->enc = encoder;
     this->u8g = u8glib; 
     this->parent = this;   
@@ -49,11 +47,11 @@ int Widget::get_height() {
 }
 
 void Widget::claim_input() {
-    Widget::has_input = this;
+    base->is_drawn = this;
 }   
 
 void Widget::claim_draw() {
-    Widget::is_drawn = this;
+    base->has_input = this;
 } 
 
 void Widget::release_input(boolean pass_down = false) {
@@ -113,15 +111,4 @@ void Widget::draw() {
 
 void Widget::input() {
     
-}
-
-static void Widget::draw_active_Widget() {
-    (*Widget::is_drawn.*draw)();
-    //(*is_drawn.*draw)();
-    Serial.println("draw");
-    //Widget::is_drawn->draw();
-}
-
-static void Widget::input_active_Widget() {
-    Widget::has_input->input();
 }

@@ -20,10 +20,12 @@
 #include "Alarm.h"
 
 //#include <Widget.h>
+#include <Base.h>
 #include <Menu.h>
 #include <Clock_Face.h>
 #include <Alarm_Menu.h>
 #include <LightRGB_Menu.h>
+
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -64,6 +66,7 @@ class UI {
 
   private:
 
+    Base *base;
     Widget *root;
     Menu *setup; 
     Clock_Face *clockface;

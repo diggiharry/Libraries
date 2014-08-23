@@ -38,8 +38,10 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     due_clock = &RTC_clock(XTAL);
    
     alarm = new Alarm();
+    
+    base = new Base();
    
-    clockface = new Clock_Face(enc, u8g, alarm, due_clock); 
+    clockface = new Clock_Face(base,enc, u8g, alarm, due_clock); 
     clockface->claim_draw(); 
     clockface->claim_input();
     
@@ -101,14 +103,14 @@ void UI::draw(void) {
     do {             
         //Widget buf = clockface->is_drawn;
         //buf.draw();        
-        Widget::draw_active_Widget();
+        base->draw();
         u8g->drawFrame(10,10,118,54);
     } while( u8g->nextPage() ); 
     cycleRBG(millis());
 }
 
 void UI::input() {
-    Widget::input_active_Widget();
+    base->input();
 }
 
 /*

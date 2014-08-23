@@ -14,8 +14,8 @@ Clock_Face::Clock_Face(Widget *parent, Alarm* alarm, RTC_clock* clock)
     this->clock = clock;
 }
 
-Clock_Face::Clock_Face(Encoder *encoder,U8G_CLASS *u8glib, Alarm* alarm, RTC_clock* clock)
-    : Widget(encoder, u8glib)
+Clock_Face::Clock_Face(Base *base, Encoder *encoder,U8G_CLASS *u8glib, Alarm* alarm, RTC_clock* clock)
+    : Widget(base, encoder, u8glib)
 {
     this->enc = encoder;
     this->u8g = u8glib; 

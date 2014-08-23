@@ -12,12 +12,13 @@
 #include <U8glib.h>
 #include <u8g.h>
 #include <Arduino.h>
+#include <Base.h>
 
 #define U8G_CLASS U8GLIB_LM6059_2X
 
 class Widget {
 public:
-    Widget(Encoder *encoder,U8G_CLASS *u8glib);
+    Widget(Base *base, Encoder *encoder,U8G_CLASS *u8glib);
     Widget(Widget *parent);
     
     void draw();
@@ -40,12 +41,6 @@ public:
 
     static boolean blink;
     static boolean blinkfast;    
- 
-    static Widget *has_input;
-    static Widget *is_drawn;
-
-    static void draw_active_Widget();
-    static void input_active_Widget();
         
 protected:
     Encoder *enc;
@@ -61,6 +56,7 @@ protected:
    
 private:
     void init();
+    Base *base;
 };
 
 
