@@ -24,7 +24,7 @@
 #include <Menu.h>
 #include <Clock_Face.h>
 #include <Alarm_Menu.h>
-#include <LightRGB_Menu.h>
+#include <SingleColor_Menu.h>
 
 
 #define LCD_MOSI 22
@@ -68,9 +68,11 @@ class UI {
 
     //RootWidget *root;
     Menu *setup; 
+    Menu *settings; 
+    Menu *lightm; 
     Clock_Face *clockface;
     Alarm_Menu *alarmm;
-    LightRGB_Menu *lightm;
+    SingleColor_Menu *singlecolorm;
         
     Alarm *alarm;
    

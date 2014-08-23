@@ -15,7 +15,7 @@
 class Menu : public Widget {
 public:
     Menu(Widget *parent, LinkedList<String*> *labels);
-    
+           
     void draw();
     void input();
     

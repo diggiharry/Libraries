@@ -46,7 +46,7 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     clockface->claim_draw(); 
     clockface->claim_input();
     
-   // create Setup Menu       
+    // create Setup Menu       
     LinkedList<String*> labels = LinkedList<String*>();
     labels.add(new String("Set Alarm"));
     labels.add(new String("Set Lights"));
@@ -54,13 +54,36 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     labels.add(new String("Done"));
     setup = new Menu(clockface,&labels);
     
-    alarmm = new Alarm_Menu(clockface,alarm);
+    // create Settings Menu       
+    labels = LinkedList<String*>();
+    labels.add(new String("Set Clock"));
+    labels.add(new String("Set Sound"));
+    labels.add(new String("Set Background"));
+    labels.add(new String("Done"));
+    settings = new Menu(clockface,&labels);
     
+    // create Light Menu       
+    labels = LinkedList<String*>();
+    labels.add(new String("Single Color"));
+    labels.add(new String("Rainbow"));
+    labels.add(new String("Colorwave"));
+    labels.add(new String("Done"));
+    lightm = new Menu(clockface,&labels);
+         
+    // Create Special Menus
+    alarmm = new Alarm_Menu(clockface,alarm);
+    singlecolorm = new SingleColor_Menu(clockface,fader);
+    
+    // Set targets
     clockface->set_target(setup);
     
     setup->add_target(0,alarmm);
+    setup->add_target(1,lightm);
+    setup->add_target(2,settings);
     setup->add_target(3,clockface);
 
+    lightm->add_target(0,singlecolorm);
+    
 }
 
 /*

@@ -14,21 +14,24 @@ InputBox::InputBox(Widget *parent, const String label, int min, int max, int sta
     this->min = min;
     this->max = max;
     this->value = startvalue;
-    this->height = 12;
+    this->height = 10;
 }
 
 void InputBox::claim_input() 
 {
     Widget::claim_input();
     
-    int diff = max - min;
+ /*   int diff = max - min;
     if (diff <= 32) {
-        enc->setUndersample( 32 / diff );
+        int u = 32 / diff;
+        if (u < 1 ) u = 1;
+        enc->setUndersample( u );
     } else if (diff <= 100) {
         enc->setUndersample(2);
     } else {
         enc->setUndersample(1);      
-    }
+    }*/
+    enc->setUndersample(1);      
 }
 
 int InputBox::get_value() {
@@ -43,9 +46,13 @@ int InputBox::get_value() {
 void InputBox::input(void) 
 {
     value = value + enc->getDirection();
+    //if (value < 0) value = max;
+    //value %= (max+1);    
+    if (value < min) value = min;
+    if (value > max) value = max;
     
     if (enc->isReleased()) {
-        parent->claim_input(); 
+        release_input(); 
     }    
 }
 
@@ -64,7 +71,7 @@ void InputBox::draw(void)
     
     int offset = numDigits(value);
     
-    u8g->setPrintPos(x+(128-offset),y);
+    u8g->setPrintPos(x+(100 -(offset*6)),y);
     
     u8g->print(value);    
 }
@@ -72,6 +79,7 @@ void InputBox::draw(void)
 static int InputBox::numDigits(int number)
 {
     int digits = 0;
+    if (number == 0) return 1;
     if (number < 0) digits = 1; // remove this line if '-' counts as a digit
     while (number) {
         number /= 10;

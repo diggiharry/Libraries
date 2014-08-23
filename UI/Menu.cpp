@@ -38,7 +38,7 @@ void Menu::claim_input() {
 void Menu::input(void) {
     
     active_item += enc->getDirection();
-    
+    if (active_item < 0) active_item = num_items-1;
     active_item %= num_items;
   
     children.get(active_item)->input();        
