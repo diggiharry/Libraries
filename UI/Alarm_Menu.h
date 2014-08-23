@@ -17,7 +17,8 @@ class Alarm_Menu : public Widget {
         Alarm_Menu(Widget *parent, Alarm *alarm) ;
         void draw();
         void input();
-
+        void claim_input();
+        
     private:
         Alarm* alarm;
         int alarm_state;

@@ -19,7 +19,9 @@ public:
     void draw();
     void input();
     
-    void add_action(int item, Widget *target);
+    void claim_input();
+    
+    void add_target(int item, Widget *target);
     
 private:
     int num_items;

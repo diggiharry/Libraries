@@ -39,13 +39,14 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
    
     alarm = new Alarm();
     
-    base = new Base();
+    //root = new RootWidget(enc, u8g);
    
-    clockface = new Clock_Face(base,enc, u8g, alarm, due_clock); 
+    //clockface = new Clock_Face(root,enc, u8g, alarm, due_clock); 
+    clockface = new Clock_Face(enc, u8g, alarm, due_clock); 
     clockface->claim_draw(); 
     clockface->claim_input();
     
-    // create Setup Menu       
+   // create Setup Menu       
     LinkedList<String*> labels = LinkedList<String*>();
     labels.add(new String("Set Alarm"));
     labels.add(new String("Set Lights"));
@@ -55,7 +56,11 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     
     alarmm = new Alarm_Menu(clockface,alarm);
     
-    setup->add_action(0,alarmm);
+    clockface->set_target(setup);
+    
+    setup->add_target(0,alarmm);
+    setup->add_target(3,clockface);
+
 }
 
 /*
@@ -101,16 +106,13 @@ void UI::draw(void) {
     // picture loop
     u8g->firstPage();  
     do {             
-        //Widget buf = clockface->is_drawn;
-        //buf.draw();        
-        base->draw();
-        u8g->drawFrame(10,10,118,54);
+        Widget::is_drawn->draw();
     } while( u8g->nextPage() ); 
     cycleRBG(millis());
 }
 
 void UI::input() {
-    base->input();
+        Widget::has_input->input();
 }
 
 /*

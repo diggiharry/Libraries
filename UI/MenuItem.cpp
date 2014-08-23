@@ -12,12 +12,14 @@ MenuItem::MenuItem(Widget *target,String label, Widget *parent)
 {
     this->label = label;
     this->target = target;
+    this->height = 10;
 }
 
 MenuItem::MenuItem(String label, Widget *parent)
     : Widget(parent) 
 {
     this->label = label;
+    this->height = 10;
 }
 
 void MenuItem::set_target(Widget *target) {
@@ -26,13 +28,10 @@ void MenuItem::set_target(Widget *target) {
 
 void MenuItem::input(void) 
 {   
-    //if (enc->getDirection() == 1) parent
-    /*
     if (enc->isReleased()) {
-        Action();
-    } */  
-    target->claim_input();
-    target->claim_draw();
+        target->claim_input();
+        target->claim_draw();
+    }  
 }
 
 /*

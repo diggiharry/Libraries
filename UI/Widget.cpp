@@ -9,15 +9,16 @@
 
 static boolean Widget::blink;
 static boolean  Widget::blinkfast;
+static Widget *Widget::has_input;
+static Widget *Widget::is_drawn;  
+static int Widget::num_widgets;
 
-class Widget;
-
-
-Widget::Widget(Base *base, Encoder *encoder,U8G_CLASS *u8glib) {
-    this->base = base;
+Widget::Widget(Encoder *encoder,U8G_CLASS *u8glib) {
     this->enc = encoder;
     this->u8g = u8glib; 
     this->parent = this;   
+    this->ID = 0;
+    this->num_widgets = 0;
     init();
 }
 
@@ -25,6 +26,8 @@ Widget::Widget(Base *base, Encoder *encoder,U8G_CLASS *u8glib) {
     this->parent = parent;
     this->enc = parent->enc;
     this->u8g = parent->u8g;
+    this->num_widgets +=1;
+    this->ID = num_widgets;
     init();
  }
 
@@ -42,16 +45,24 @@ void Widget::set_pos(int x, int y) {
     this->y = y;
 }
 
+int Widget::get_x() {
+    return x;
+}
+
+int Widget::get_y() {
+    return y;
+} 
+
 int Widget::get_height() {
     return height;
 }
 
 void Widget::claim_input() {
-    base->is_drawn = this;
+    Widget::has_input = this;
 }   
 
 void Widget::claim_draw() {
-    base->has_input = this;
+    Widget::is_drawn = this;
 } 
 
 void Widget::release_input(boolean pass_down = false) {
@@ -105,10 +116,9 @@ static String Widget::dec2str(int dec) {
 }
 
 void Widget::draw() {
-    u8g->setFont(u8g_font_symb14); 
-    u8g->setPrintPos(50,50);    
+
 }
 
 void Widget::input() {
-    
+
 }

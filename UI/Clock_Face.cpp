@@ -7,24 +7,32 @@
 
 #include "Clock_Face.h"
 
-Clock_Face::Clock_Face(Widget *parent, Alarm* alarm, RTC_clock* clock)
+/*Clock_Face::Clock_Face(Widget *parent, Alarm* alarm, RTC_clock* clock)
     : Widget(parent)
 {
     this->alarm = alarm;
     this->clock = clock;
-}
+}*/
 
-Clock_Face::Clock_Face(Base *base, Encoder *encoder,U8G_CLASS *u8glib, Alarm* alarm, RTC_clock* clock)
-    : Widget(base, encoder, u8glib)
+Clock_Face::Clock_Face(Encoder *encoder,U8G_CLASS *u8glib, Alarm* alarm, RTC_clock* clock)
+    : Widget(encoder, u8glib)
 {
-    this->enc = encoder;
-    this->u8g = u8glib; 
+    //this->enc = encoder;
+    //this->u8g = u8glib; 
     this->alarm = alarm;
     this->clock = clock;
 }
 
-void Clock_Face::input(void) {
-  
+void Clock_Face::set_target(Widget *target) {
+    this->target = target;
+}
+
+void Clock_Face::input(void) 
+{   
+    if (enc->isReleased()) {
+        target->claim_input();
+        target->claim_draw();
+    }  
 }
 
 /*
@@ -34,8 +42,6 @@ void Clock_Face::input(void) {
  */
 void Clock_Face::draw(void) {
    
-    Serial.println(x);
-    
     int time_y = 47;
     int time_x = 10;
 

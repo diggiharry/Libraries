@@ -14,6 +14,11 @@ Alarm_Menu::Alarm_Menu(Widget *parent,Alarm *alarm) : Widget(parent) {
     alarm_state = -1;   
 }
 
+void Alarm_Menu::claim_input() {
+    Widget::claim_input();
+    alarm_state = -1;   
+}
+
 /*
  * function enc_clock()
  *
@@ -35,7 +40,7 @@ void Alarm_Menu::input(void) {
             break;
 	case 1:
             minute += enc->getDirection();
-            minute = hour % 59;
+            minute = minute % 59;
             alarm->set_minute(minute);
             break;
 	case 2:

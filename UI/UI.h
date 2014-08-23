@@ -19,8 +19,8 @@
 #include "Fader.h"
 #include "Alarm.h"
 
-//#include <Widget.h>
-#include <Base.h>
+#include <Widget.h>
+//#include <Root.h>
 #include <Menu.h>
 #include <Clock_Face.h>
 #include <Alarm_Menu.h>
@@ -66,8 +66,7 @@ class UI {
 
   private:
 
-    Base *base;
-    Widget *root;
+    //RootWidget *root;
     Menu *setup; 
     Clock_Face *clockface;
     Alarm_Menu *alarmm;

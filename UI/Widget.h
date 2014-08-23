@@ -12,24 +12,27 @@
 #include <U8glib.h>
 #include <u8g.h>
 #include <Arduino.h>
-#include <Base.h>
+#include <LinkedList.h>
 
 #define U8G_CLASS U8GLIB_LM6059_2X
 
 class Widget {
 public:
-    Widget(Base *base, Encoder *encoder,U8G_CLASS *u8glib);
+    Widget(Encoder *encoder,U8G_CLASS *u8glib);
     Widget(Widget *parent);
     
-    void draw();
-    void input();
+    virtual void draw();
+    virtual void input();
     
-    void claim_input();
+    virtual void claim_input();
     void claim_draw();
     
     void release_input(boolean pass_down = false);   
         
     void set_pos(int x, int y);
+    int get_x();
+    int get_y();    
+    
     int get_height();    
     
     //function has to be called in main programm at a period of 500ms
@@ -41,7 +44,10 @@ public:
 
     static boolean blink;
     static boolean blinkfast;    
-        
+    
+    static Widget *has_input;
+    static Widget *is_drawn;      
+
 protected:
     Encoder *enc;
     U8G_CLASS *u8g; 
@@ -53,10 +59,12 @@ protected:
     
     static String time2str(int hour,int minute);
     static String dec2str(int dec);
-   
+    
+    int ID;
+    static int num_widgets;
+    
 private:
     void init();
-    Base *base;
 };
 
 
