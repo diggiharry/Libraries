@@ -9,12 +9,12 @@
 /*
  * Constructor
  */
-UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g) 
-{
+UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound) 
+{   
     dim = 255; // has to be between 26 and 255 !
-    redVal = 255; // Variables to store the values to send to the pins
-    greenVal = 255;   // Initial values are Red full, Green and Blue off
-    blueVal = 255;
+    redVal = 0; // Variables to store the values to send to the pins
+    greenVal = 0;   // Initial values are Red full, Green and Blue off
+    blueVal = 0;
 
     phase_green = 500;
     phase_blue = 1000;
@@ -38,6 +38,8 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     due_clock = &RTC_clock(XTAL);
    
     alarm = new Alarm();
+    
+    this->sound = sound;
     
     //root = new RootWidget(enc, u8g);
    
@@ -65,14 +67,18 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     // create Light Menu       
     labels = LinkedList<String*>();
     labels.add(new String("Single Color"));
-    labels.add(new String("Rainbow"));
     labels.add(new String("Colorwave"));
+    labels.add(new String("Rainbow"));
     labels.add(new String("Done"));
     lightm = new Menu(clockface,&labels);
          
     // Create Special Menus
     alarmm = new Alarm_Menu(clockface,alarm);
     singlecolorm = new SingleColor_Menu(clockface,fader);
+    rainbowm = new Rainbow_Menu(clockface,fader);
+    colorwavem = new Colorwave_Menu(clockface,fader);
+    soundm = new Sound_Menu(clockface,sound);
+    clockm = new Clock_Menu(clockface, due_clock, &ext_clock);
     
     // Set targets
     clockface->set_target(setup);
@@ -82,8 +88,15 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g)
     setup->add_target(2,settings);
     setup->add_target(3,clockface);
 
-    lightm->add_target(0,singlecolorm);
+    settings->add_target(0,clockm);
+    settings->add_target(1,soundm);
+    settings->add_target(3,clockface);  
     
+    lightm->add_target(0,singlecolorm);
+    lightm->add_target(1,colorwavem);
+    lightm->add_target(2,rainbowm);
+    lightm->add_target(3,clockface);
+  
 }
 
 /*
@@ -97,9 +110,9 @@ void UI::init() {
 
         due_clock->init();
         
-        clock.getTime(); 
+        ext_clock.getTime(); 
         
-        due_clock->set_time(clock.hour, clock.minute, clock.second);
+        due_clock->set_time(ext_clock.hour, ext_clock.minute, ext_clock.second);
 
 	TSL2561.init();
          

@@ -5,35 +5,40 @@
  * Created on 16. August 2014, 19:10
  */
 
-#include "LightRGB_Menu.h"
+#include "SingleColor_Menu.h"
 
-LightRGB_Menu::LightRGB_Menu(Widget *parent, Fader *fader) 
+SingleColor_Menu::SingleColor_Menu(Widget *parent, Fader *fader) 
     : Widget(parent) 
 {
     this->fader = fader;
-    state = -1;
-    mode = SINGLE_COLOR;
-    sub_state = 0;
     
-    x=10;
-    y=20;
+    x = 0;
+    y = 5;
     
     red = 50;
     green = 50;
-    blue = 50;
-    
-    period = 500;
-    phase1 = 100;
-    phase2 = 200;
-    
+    blue = 50;  
+     
     active_item = 0;
-        
-    redbox = new InputBox(this, "Red:", 0, 255, red);
-    greenbox = new InputBox(this, "Green:", 0, 255, green);
-    bluebox = new InputBox(this, "Blue:", 0, 255, blue);
+    int i = 0;    
+    redbox = new InputBox(this, "Red", 0, 100, red);
+    redbox->set_pos(x+20,y+10+i*(redbox->get_height()+4)-2);
+    i++;
+    greenbox = new InputBox(this, "Green", 0, 100, green);
+    greenbox->set_pos(x+20,y+10+i*(greenbox->get_height()+4)-2);
+    i++;
+    bluebox = new InputBox(this, "Blue", 0, 100, blue);
+    bluebox->set_pos(x+20,y+10+i*(bluebox->get_height()+4)-2);
+    i++;
     done = new MenuItem("Done", this);     
-    done->set_target(parent);
-    
+    done->set_pos(x+20,y+10+i*(done->get_height()+4)-2);
+   
+}
+
+
+void SingleColor_Menu::claim_input() {
+    Widget::claim_input();
+    enc->setUndersample(10);
 }
 
 /*
@@ -41,24 +46,26 @@ LightRGB_Menu::LightRGB_Menu(Widget *parent, Fader *fader)
  *
  * encoder assignment for clock-face
  */
-void LightRGB_Menu::input(void) {
+void SingleColor_Menu::input(void) {
    
     active_item += enc->getDirection();
+    if (active_item < 0) active_item = 3;
     active_item %= 4;    
     
     if (enc->isReleased()) {
         switch(active_item) {
-            case 1:
+            case 0:
                 redbox->claim_input();
                 break;
-            case 2:
+            case 1:
                 greenbox->claim_input();
                 break;
-            case 3:
+            case 2:
                 bluebox->claim_input();
                 break;
-            case 4:
-                done->claim_input();
+            case 3:
+                active_item = 0;
+                this->release_input(true);
                 break;            
         }
     }
@@ -70,117 +77,32 @@ void LightRGB_Menu::input(void) {
  *
  * function for drawing the clock-face
  */
-void LightRGB_Menu::draw(void) {
+void SingleColor_Menu::draw(void) {
+    
+    redbox->draw();
+    greenbox->draw();
+    bluebox->draw();
+    done->draw();
 
-    switch(state)
-    {
-        case SELECT_MODE:
-
-            u8g->setFont(u8g_font_fixed_v0);
-            u8g->setPrintPos(10,10);
-            u8g->print("SET LIGHT MODE");
-
-            u8g->setPrintPos(10,30);
-
-            switch(mode)
-            {
-                case SINGLE_COLOR:
-                    u8g->print("Single Color");
-                    break;
-                case RAINBOW:
-                    u8g->print("Rainbow Mode");
-                    break;
-                case SUNRISE:
-                    u8g->print("Sunrise");
-                    break;                    
-                case COLORWAVE:
-                    u8g->print("Colorwave");
-                    break;                    
-            }
-
-            if (Widget::blinkfast) {
-                    u8g->drawLine(15,35,70,35);
-            }
-            break;
-            
-        case SINGLE_COLOR:
-            
-            u8g->setFont(u8g_font_courR10);
-            u8g->setPrintPos(x,y);
-            u8g->print("Red");
-            u8g->setPrintPos(x,y+15);
-            u8g->print("Green");
-            u8g->setPrintPos(x,y+30);
-            u8g->print("Blue");
-            u8g->setPrintPos(x,y+45);
-            u8g->print("Done");
-            
-            u8g->setPrintPos(x+50,y);
-            u8g->print(red);
-            u8g->setPrintPos(x+50,y+15);
-            u8g->print(green);
-            u8g->setPrintPos(x+50,y+30);
-            u8g->print(blue);
-               
-            if (make_input) x += 50;
-            
-             switch(sub_state)
-            {
-                case 0:
-                    u8g->drawLine(x,y+2,x+20,y+2);
-                    break;
-                case 1:
-                    u8g->drawLine(x,y+2+15,x+20,y+2+15);
-                    break;
-                case 2:
-                    u8g->drawLine(x,y+2+30,x+20,y+2+30);
-                    break;
-                case 3:
-                    u8g->drawLine(x,y+2+45,x+20,y+2+45);
-                    break;                  
-            }            
-
-            break;
-            
-        case RAINBOW:
-            x -= 15;
-            
-            u8g->setFont(u8g_font_courR10);
-            u8g->setPrintPos(x,y);
-            u8g->print("Period");
-            u8g->setPrintPos(x,y+15);
-            u8g->print("Phase1");
-            u8g->setPrintPos(x,y+30);
-            u8g->print("Phase2");
-            u8g->setPrintPos(x,y+45);
-            u8g->print("Done");
-            
-            u8g->setPrintPos(x+60,y);
-            u8g->print(period*10);
-            u8g->setPrintPos(x+60,y+15);
-            u8g->print(phase1*10);
-            u8g->setPrintPos(x+60,y+30);
-            u8g->print(phase2*10);
-                     
-            
-            if (make_input) x += 50;
-            
-             switch(sub_state)
-            {
-                case 0:
-                    u8g->drawLine(x,y+2,x+20,y+2);
-                    break;
-                case 1:
-                    u8g->drawLine(x,y+2+15,x+20,y+2+15);
-                    break;
-                case 2:
-                    u8g->drawLine(x,y+2+30,x+20,y+2+30);
-                    break;
-                case 3:
-                    u8g->drawLine(x,y+2+45,x+20,y+2+45);
-                    break;                  
-            }            
-           
-            break;
-    }
+    u8g->setFont(u8g_font_cu12_67_75);
+        switch(active_item) {
+            case 0:
+                u8g->setPrintPos(5,redbox->get_y()+3);            
+                break;
+            case 1:
+                u8g->setPrintPos(5,greenbox->get_y()+3);            
+                break;
+            case 2:
+                u8g->setPrintPos(5,bluebox->get_y()+3);            
+                break;
+            case 3:
+                u8g->setPrintPos(5,done->get_y()+3);            
+                break;            
+        }
+    u8g->print( (char) 104 );
+    
+    red = ((float) redbox->get_value() / 100 )*1023;
+    green = ((float) greenbox->get_value() / 100 )*1023;
+    blue = ((float) bluebox->get_value() / 100 )*1023;   
+    fader->set_all( red, green, blue );
 }

@@ -6,8 +6,6 @@
  */
 
 #include "Alarm_Menu.h"
-#include "Menu.h"
-
 
 Alarm_Menu::Alarm_Menu(Widget *parent,Alarm *alarm) : Widget(parent) {
     this->alarm = alarm;
@@ -106,7 +104,7 @@ void Alarm_Menu::draw(void) {
 	u8g->setPrintPos(time_x+46,time_y-5);
 	u8g->print(":");
 
-	if (Menu::blinkfast)
+	if (Widget::blinkfast)
 	switch(alarm_state)
 	{
 	case 0:

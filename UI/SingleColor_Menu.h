@@ -13,19 +13,12 @@
 #include <MenuItem.h>
 #include "Fader.h"
 
-// define different states
-#define SELECT_MODE 0
-#define SINGLE_COLOR 1
-#define RAINBOW 2
-#define SUNRISE 3
-#define COLORWAVE 4
-
-
-class LightRGB_Menu : public Widget {
+class SingleColor_Menu : public Widget {
 public:
-    LightRGB_Menu(Widget *parent, Fader *fader);
+    SingleColor_Menu(Widget *parent, Fader *fader);
     void draw();
     void input();
+    void claim_input();
     
 private:
     
@@ -36,19 +29,9 @@ private:
     
     Fader *fader;
     
-    int state;
-    int mode;
-    
-    int sub_state;
-    
     int red,green,blue;
     
-    int period,phase1,phase2;
-    
-    int active_item; 
-   
-    boolean make_input;
-    
+    int active_item;     
 };
 
 #endif	/* LIGHTRGB_MENU_H */

@@ -18,6 +18,7 @@
 #include <rtc_clock.h>
 #include "Fader.h"
 #include "Alarm.h"
+#include "SoundManager.h"
 
 #include <Widget.h>
 //#include <Root.h>
@@ -25,7 +26,10 @@
 #include <Clock_Face.h>
 #include <Alarm_Menu.h>
 #include <SingleColor_Menu.h>
-
+#include <Rainbow_Menu.h>
+#include <Colorwave_Menu.h>
+#include <Sound_Menu.h>
+#include <Clock_Menu.h>
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -49,7 +53,7 @@
 class UI {
   public:
 
-    UI(Encoder *encoder, Fader *fader, U8G_CLASS *u8g);
+    UI(Encoder *encoder, Fader *fader, U8G_CLASS *u8g, SoundManager *sound);
     void draw();
     void input();
 
@@ -73,7 +77,12 @@ class UI {
     Clock_Face *clockface;
     Alarm_Menu *alarmm;
     SingleColor_Menu *singlecolorm;
-        
+    Rainbow_Menu *rainbowm;
+    Colorwave_Menu *colorwavem;
+    Sound_Menu *soundm;
+    Clock_Menu *clockm;
+    
+    SoundManager *sound;
     Alarm *alarm;
    
     U8G_CLASS *u8g;
@@ -91,7 +100,7 @@ class UI {
 
     Encoder *enc;
     
-    DS1307 clock;
+    DS1307 ext_clock;
 
     Fader *fade;
 
