@@ -1,30 +1,13 @@
 #include "UI.h"
 
-
-// the LCD backlight is connected up to a pin so you can turn it on & off
-#define BACKLIGHT_RED 5
-#define BACKLIGHT_GREEN 6 
-#define BACKLIGHT_BLUE 7
-
 /*
  * Constructor
  */
-UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound) 
+UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_clock *due_clock, Alarm *alarm) 
 {   
-    dim = 255; // has to be between 26 and 255 !
-    redVal = 0; // Variables to store the values to send to the pins
-    greenVal = 0;   // Initial values are Red full, Green and Blue off
-    blueVal = 0;
-
     phase_green = 500;
     phase_blue = 1000;
     period = 50000;
-
-    pinMode(BACKLIGHT_RED,   OUTPUT);   // sets the pins as output
-    pinMode(BACKLIGHT_GREEN, OUTPUT);
-    pinMode(BACKLIGHT_BLUE,  OUTPUT);
-   
-    backlight = true;
 
     lux = 0;
 
@@ -32,18 +15,14 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound)
         
     fade = fader;
     
-    //u8g = &U8G_CLASS(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);
     this->u8g = u8g;
-    
-    due_clock = &RTC_clock(XTAL);
-   
-    alarm = new Alarm();
-    
+
     this->sound = sound;
     
-    //root = new RootWidget(enc, u8g);
-   
-    //clockface = new Clock_Face(root,enc, u8g, alarm, due_clock); 
+    this->alarm = alarm;
+    
+    this->due_clock = due_clock;
+       
     clockface = new Clock_Face(enc, u8g, alarm, due_clock); 
     clockface->claim_draw(); 
     clockface->claim_input();
@@ -79,6 +58,7 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound)
     colorwavem = new Colorwave_Menu(clockface,fader);
     soundm = new Sound_Menu(clockface,sound);
     clockm = new Clock_Menu(clockface, due_clock, &ext_clock);
+    backgroundm = new Background_Menu(clockface);
     
     // Set targets
     clockface->set_target(setup);
@@ -90,6 +70,7 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound)
 
     settings->add_target(0,clockm);
     settings->add_target(1,soundm);
+    settings->add_target(2,backgroundm);
     settings->add_target(3,clockface);  
     
     lightm->add_target(0,singlecolorm);
@@ -106,19 +87,13 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound)
  */
 void UI::init() {
             
-	//u8g->setColorIndex(1);         //BW Mode
-
         due_clock->init();
         
         ext_clock.getTime(); 
         
         due_clock->set_time(ext_clock.hour, ext_clock.minute, ext_clock.second);
 
-	TSL2561.init();
-         
-	analogWrite(BACKLIGHT_RED,   redVal);   // Write current values to LED pins
-	analogWrite(BACKLIGHT_GREEN, greenVal);
-	analogWrite(BACKLIGHT_BLUE,  blueVal);       
+	TSL2561.init();    
 }
 
 void UI::getTime() {
@@ -144,24 +119,13 @@ void UI::draw(void) {
     do {             
         Widget::is_drawn->draw();
     } while( u8g->nextPage() ); 
-    cycleRBG(millis());
+    //cycleRBG(millis());
 }
 
 void UI::input() {
         Widget::has_input->input();
 }
 
-/*
- * function cycleRBG()
- *
- * function for cycling through the colors of the backlight
- */
-void UI::cycleRBG(long ms) { 
-	redVal = floor( 128 + 127 * (double)  cos(2*PI/period*ms) );
-	greenVal = floor( 128 + 127 * (double) cos(2*PI/period*(phase_green-ms)));
-	blueVal = floor( 128 + 127 * (double) cos(2*PI/period*(phase_blue-ms)));
-  
-	analogWrite(BACKLIGHT_RED,   redVal);   // Write current values to LED pins
-	analogWrite(BACKLIGHT_GREEN, greenVal);
-	analogWrite(BACKLIGHT_BLUE,  blueVal);
+void UI::check_alarm() {
+    alarm->check();
 }

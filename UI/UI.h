@@ -4,10 +4,8 @@
  *
  */
 
-#ifndef ui_h
-#define ui_h
-
-//class U8GLIB;
+#ifndef UI_H
+#define UI_H
 
 #include <Arduino.h>
 #include <U8glib.h>
@@ -21,7 +19,6 @@
 #include "SoundManager.h"
 
 #include <Widget.h>
-//#include <Root.h>
 #include <Menu.h>
 #include <Clock_Face.h>
 #include <Alarm_Menu.h>
@@ -30,6 +27,7 @@
 #include <Colorwave_Menu.h>
 #include <Sound_Menu.h>
 #include <Clock_Menu.h>
+#include <Background_Menu.h>
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -53,14 +51,13 @@
 class UI {
   public:
 
-    UI(Encoder *encoder, Fader *fader, U8G_CLASS *u8g, SoundManager *sound);
+    UI(Encoder *encoder, Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_clock *due_clock, Alarm *alarm);
     void draw();
     void input();
-
+    void check_alarm();
+    
     void init();
    
-    void cycleRBG(long ms);
-
     void getTime();
     int getHours();
     int getMinutes();
@@ -81,16 +78,12 @@ class UI {
     Colorwave_Menu *colorwavem;
     Sound_Menu *soundm;
     Clock_Menu *clockm;
-    
+    Background_Menu *backgroundm;
+            
     SoundManager *sound;
-    Alarm *alarm;
    
     U8G_CLASS *u8g;
     
-    int dim; // has to be between 26 and 255 !
-    int redVal; // Variables to store the values to send to the pins
-    int greenVal;   // Initial values are Red full, Green and Blue off
-    int blueVal;
     int phase_green;
     int phase_blue;
     int period;
@@ -106,8 +99,10 @@ class UI {
 
     RTC_clock *due_clock;
     const char* daynames[7]={"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+    Alarm *alarm;
 };
 
 //extern UI ui;
 
-#endif
+#endif // UI_H

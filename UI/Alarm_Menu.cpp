@@ -33,16 +33,18 @@ void Alarm_Menu::input(void) {
             break;
 	case 0:
             hour += enc->getDirection();
+            if (hour < 0) hour = 23;
             hour = hour % 23;
             alarm->set_hour(hour);
             break;
 	case 1:
             minute += enc->getDirection();
+            if (minute < 0) minute = 59;
             minute = minute % 59;
             alarm->set_minute(minute);
             break;
 	case 2:
-            set = enc->getDirection();
+            set = enc->getDirection() % 2;
             if (set == -1) alarm->set(false);
             if (set == 1) alarm->set(true);
             break;

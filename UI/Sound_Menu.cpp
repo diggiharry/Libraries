@@ -53,12 +53,12 @@ void Sound_Menu::input(void) {
         switch(active_item) {
             case 0:
                 sound->play();
-                delay(400);
+                //delay(400);
                 volbox->claim_input();
                 break;
             case 1:
                 sound->play();
-                delay(400);
+                //delay(400);
                 songbox->claim_input();
                 break;
             case 2:
@@ -83,23 +83,23 @@ void Sound_Menu::draw(void) {
 
     if (volbox->is_increased()) {
         volume++;
-        volume %= 30;
+        if (volume > 30) volume = 30;
         sound->set_volume(volume);
-        delay(400);
+        //delay(400);
     }
     if (volbox->is_decreased()) {
         volume--;
         if (volume < 0) volume = 0;
         sound->set_volume(volume);
-        delay(400);
+        //delay(400);
     }
     if (songbox->is_increased()) {
         sound->next();        
-        delay(400);
+        //delay(400);
     }
     if (songbox->is_decreased()) {
         sound->prev();
-        delay(400);        
+        //delay(400);        
     }
     
     u8g->setFont(u8g_font_cu12_67_75);

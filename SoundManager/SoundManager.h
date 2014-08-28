@@ -8,7 +8,6 @@
 #ifndef SOUNDMANAGER_H
 #define	SOUNDMANAGER_H
 
-#include <Arduino.h>
 #include <DFPlayer_Mini_Mp3.h>
 
 class SoundManager {
@@ -26,8 +25,9 @@ public:
     void update();
     
 private:
-    
+    HardwareSerial *HSerial;
     int volume;
+    void read();
 };
 
 #endif	/* SOUNDMANAGER_H */

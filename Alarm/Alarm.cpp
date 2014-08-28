@@ -7,7 +7,10 @@
 
 #include "Alarm.h"
 
-Alarm::Alarm() {
+Alarm::Alarm(RTC_clock *clock, SoundManager *sound, Fader *fader) {
+    this->clock = clock;
+    this->sound = sound;
+    this->fader = fader;
     alarm_hour = 0;
     alarm_minute = 0;
     alarm_is_set = false;
@@ -35,4 +38,18 @@ int Alarm::get_hour() {
 
 int Alarm::get_minute() {
     return alarm_minute;
+}
+
+void Alarm::check() {
+    if (alarm_is_set) {
+        int minutes = clock->get_minutes();
+        int hour = clock->get_hours();
+        
+        minutes = hour*60+minutes;
+        int alarm_minutes = alarm_hour*60+alarm_minute;        
+            
+        //if (alarm_minutes == (minutes-30) ) fader->start_sunrise(30*60*1000); 
+        if (alarm_minutes == (minutes-30) ) fader->start_sunrise(60*1000); 
+        if (alarm_minutes == minutes) sound->play();       
+    }         
 }

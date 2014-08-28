@@ -11,11 +11,20 @@ Fader::Fader() {
     target_state = IDLE;  
     count = -1;
     section_duration = 0;
+    for (int h = 0;h<12;h++) {
+        singlecolor_values[h] = 512;
+    }      
+    //last_effect = &Fader::start_fade_to_color;
+    last_effect = &Fader::start_rainbow;
 }
 
 void Fader::init() {
     sb.init();
     sb.update();
+}
+
+void Fader::start_last_effect() {
+    if (state == IDLE) (this->*last_effect)();
 }
 
 void Fader::update(unsigned long ms) {
@@ -40,8 +49,7 @@ void Fader::update(unsigned long ms) {
     
     for (int h = 0;h<4;h++) {
           sb.set(h,floor(values[h*3]),floor(values[h*3+1]),floor(values[h*3+2]));  
-    }
-    
+    }    
     sb.update();
 }
 
@@ -78,9 +86,15 @@ void Fader::fade_to_color() {
     }   
 }
 
+void Fader::start_fade_to_color() {
+    start_fade_to_color( (int) singlecolor_values,1000);
+}
+
 void Fader::start_fade_to_color(int colors[12], unsigned long duration) {   
+    last_effect = &Fader::start_fade_to_color;
     for (int h = 0;h<12;h++) {
         target_values[h] =  (float) colors[h];
+        singlecolor_values[h] = target_values[h];
         slopes[h] = ( target_values[h] - values[h] ) / duration  ;
     }
     dur = duration;
@@ -88,7 +102,7 @@ void Fader::start_fade_to_color(int colors[12], unsigned long duration) {
     state = FADE_TO_COLOR;
     start = millis();
     prev_millis = start; 
-    fade_to_color();
+    fade_to_color();    
 }
 
 
@@ -101,7 +115,13 @@ float Fader::triangle_function(unsigned long ms,unsigned int period, int phase) 
     return 2 * abs(round( ( (float) ms+phase)/period)-( ( (float) ms+phase)/ period)) ;    
 }
 
+void Fader::start_rainbow() {
+    start_rainbow(rainbow_period, rainbow_phase1, rainbow_phase2);
+}
+
 void Fader::start_rainbow(int period, int phase1, int phase2) {
+    last_effect = &Fader::start_fade_to_color; 
+    
     rainbow_phase1 = phase1;
     rainbow_phase2 = phase2;
     rainbow_period = period;
@@ -164,15 +184,19 @@ void Fader::sunrise() {
     count++;
 }
 
-
+void Fader::start_colorwave() {
+    start_colorwave(cw_period);
+}
 
 void Fader::start_colorwave(int period) {
+    last_effect = &Fader::start_fade_to_color; 
+
     cw_period = period;
     
     float buf = 1;
     float hue = 0;
     for (int h = 0;h<4;h++) {
-        hue = triangle_function(0,cw_period,h*(cw_period/5));
+        hue = triangle_function(0,cw_period,h*( (float) cw_period/8));
         hsvToRgb(hue,buf,buf,target_values+h*3);
     }
         int duration = 2000;
@@ -192,7 +216,7 @@ void Fader::colorwave() {
     float buf = 1;
     float hue = 0;
     for (int h = 0;h<4;h++) {
-        hue = triangle_function(diff_millis,cw_period,h*(cw_period/5));
+        hue = triangle_function(diff_millis,cw_period,h*(cw_period/8));
         hsvToRgb(hue,buf,buf,values+h*3);
     }
 }

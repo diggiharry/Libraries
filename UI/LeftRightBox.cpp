@@ -24,16 +24,16 @@ void LeftRightBox::claim_input() {
 }
 
 boolean LeftRightBox::is_increased() {
-    if (direction == 1) {
-        //direction = 0;
+    if (direction >= 1) {
+        direction = 0;
         return true;
     }
     else return false;
 }
 
 boolean LeftRightBox::is_decreased() {
-    if (direction == -1) {
-        //direction = 0;
+    if (direction <= -1) {
+        direction = 0;
         return true;
     }
     else return false;   

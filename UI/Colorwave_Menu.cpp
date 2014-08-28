@@ -19,7 +19,7 @@ Colorwave_Menu::Colorwave_Menu(Widget *parent, Fader *fader)
      
     active_item = 0;
     int i = 0;    
-    periodbox = new InputBox(this, "Period", 1, 100, period/100);
+    periodbox = new InputBox(this, "Period", 1, 1000, period/100);
     periodbox->set_pos(x+20,y+10+i*(periodbox->get_height()+4)-2);
     i++;
     done = new MenuItem("Done", this);     
