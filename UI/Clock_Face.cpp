@@ -72,7 +72,7 @@ void Clock_Face::draw(void) {
     u8g->print(dec2str(clock->get_minutes()));
 
     u8g->setFont(u8g_font_fixed_v0);
-    u8g->setPrintPos(time_x+106,time_y);
+    u8g->setPrintPos(time_x+107,time_y);
     //u8g.print(dec2str(clock.second));
     u8g->print(dec2str(clock->get_seconds()));
 

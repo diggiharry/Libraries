@@ -12,6 +12,7 @@ More info: http://www.buxtronix.net/2011/10/rotary-encoders-done-properly.html
 #define rgbenc_h
 
 #include <Arduino.h>
+#include <Button.h>
 
 #define R_START 0x0
 #define R_CW_FINAL 0x1
@@ -46,7 +47,7 @@ const unsigned char ttable[7][4] = {
 };
 
 
-class Encoder {
+class Encoder : public Button{
   public:
 	Encoder(int button_pin,int A_pin,int B_pin);
 
@@ -54,29 +55,19 @@ class Encoder {
 	void updateEncoder_A();
 	void updateEncoder_B();
 
-	void updateButton();
-
 	void Init();
 
 	void setUndersample(int undersample);
-
-	boolean isPressed();
-
-	boolean isReleased();
         
         int getDirection();
 
   private:
 
-	int button;
 	int A;
 	int B;
 
 	int min;
 	int max;
-
-	boolean buttonState;
-	boolean lastbuttonState;
 
 	unsigned int A_old;
 	unsigned int B_new;

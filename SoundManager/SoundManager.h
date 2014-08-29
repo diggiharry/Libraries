@@ -19,14 +19,16 @@ public:
     void next();
     void prev();
     void set_volume(int volume);
-    void fade_in(int duration);
-    void fade_out(int duration);
+    int get_volume();
+    void fade_in();
+    void fade_out();
     
     void update();
     
 private:
     HardwareSerial *HSerial;
     int volume;
+    int target_volume;
     void read();
 };
 

@@ -20,19 +20,20 @@
 class Fader {
     public:
         Fader();
-        void update(unsigned long ms);
+        void update();
         void init();
-        void start_rainbow(int period = 5000, int phase1 = 1000, int phase2 = 2000);        
-        void start_rainbow(void);        
-        void start_fade_to_color(int colors[12],unsigned long duration = 1000);
-        void start_fade_to_color(void);
+        void start_rainbow(int period, int phase1, int phase);        
+        void start_fade_to_color(int colors[12],unsigned long duration = 3000, boolean register_last_effect = true);
         void start_sunrise(unsigned long duration);
         void start_colorwave(int period);
-        void start_colorwave(void);
+        
+        boolean is_idle();
         
         void set_color(int colors[12]);
         void set_all(int red, int green, int blue);
+        void set_all(float hue, float lightness);
         void fade_out();
+        void fade_out(int duration);
         void start_last_effect();
         
     private: 
@@ -48,12 +49,14 @@ class Fader {
         float triangle_function(unsigned long ms,unsigned int period, int phase);
     
         void fade_to_color();
-        float singlecolor_values[12] = {0,0,0, 0,0,0, 0,0,0, 0,0,0};
+        int singlecolor_values[12] = {0,0,0, 0,0,0, 0,0,0, 0,0,0};
 
         
         //void rgbToHsv(byte r, byte g, byte b, double hsv[]);
         void hsvToRgb(float h, float s, float v, float rgb[]);
-
+        void hslToRgb(float h, float s, float v, float rgb[]);
+        float hue2rgb(float p, float q, float t);
+        
         // Stuff for rainbow
         void rainbow();
         int rainbow_phase1 = 500;
@@ -72,7 +75,7 @@ class Fader {
         void colorwave();
         int cw_period = 2000;
 
-        void (Fader::*last_effect) (void);
+        int last_effect;
 };
 
 #endif

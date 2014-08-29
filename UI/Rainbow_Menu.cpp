@@ -21,13 +21,13 @@ Rainbow_Menu::Rainbow_Menu(Widget *parent, Fader *fader)
      
     active_item = 0;
     int i = 0;    
-    periodbox = new InputBox(this, "Period", 20, 1000, period);
+    periodbox = new InputBox(this, "Period", 20, 1000, period*10);
     periodbox->set_pos(x+20,y+10+i*(periodbox->get_height()+4)-2);
     i++;
-    phase1box = new InputBox(this, "Phase 1", 0, 300, phase1);
+    phase1box = new InputBox(this, "Phase 1", 0, 300, phase1*10);
     phase1box->set_pos(x+20,y+10+i*(phase1box->get_height()+4)-2);
     i++;
-    phase2box = new InputBox(this, "Phase 2", 0, 300, phase2);
+    phase2box = new InputBox(this, "Phase 2", 0, 300, phase2*10);
     phase2box->set_pos(x+20,y+10+i*(phase2box->get_height()+4)-2);
     i++;
     done = new MenuItem("Done", this);     
@@ -102,10 +102,7 @@ void Rainbow_Menu::draw(void) {
         }
     u8g->print( (char) 104 );
     
-    //period = ((float) periodbox->get_value() / 100 )*1023;
-    //phase1 = ((float) phase1box->get_value() / 100 )*1023;
-    //phase2 = ((float) phase2box->get_value() / 100 )*1023;   
-    period = periodbox->get_value() ;
-    phase1 = phase1box->get_value() ;
-    phase2 = phase2box->get_value() ;   
+    period = periodbox->get_value()/10 ;
+    phase1 = phase1box->get_value()/10 ;
+    phase2 = phase2box->get_value()/10 ;   
 }

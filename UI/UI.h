@@ -21,6 +21,7 @@
 #include <Widget.h>
 #include <Menu.h>
 #include <Clock_Face.h>
+//#include <Alarm_Face.h>
 #include <Alarm_Menu.h>
 #include <SingleColor_Menu.h>
 #include <Rainbow_Menu.h>
@@ -62,8 +63,6 @@ class UI {
     int getHours();
     int getMinutes();
     int getSeconds();
-   
-    void getLux();
 
   private:
 
@@ -72,6 +71,7 @@ class UI {
     Menu *settings; 
     Menu *lightm; 
     Clock_Face *clockface;
+    //Alarm_Face *alarmface;
     Alarm_Menu *alarmm;
     SingleColor_Menu *singlecolorm;
     Rainbow_Menu *rainbowm;
@@ -102,7 +102,5 @@ class UI {
 
     Alarm *alarm;
 };
-
-//extern UI ui;
 
 #endif // UI_H

@@ -34,19 +34,14 @@ void Alarm_Menu::input(void) {
 	case 0:
             hour += enc->getDirection();
             if (hour < 0) hour = 23;
-            hour = hour % 23;
+            hour = hour % 24;
             alarm->set_hour(hour);
             break;
 	case 1:
             minute += enc->getDirection();
             if (minute < 0) minute = 59;
-            minute = minute % 59;
+            minute = minute % 60;
             alarm->set_minute(minute);
-            break;
-	case 2:
-            set = enc->getDirection() % 2;
-            if (set == -1) alarm->set(false);
-            if (set == 1) alarm->set(true);
             break;
 	}
 
@@ -59,11 +54,6 @@ void Alarm_Menu::input(void) {
                     minute = alarm->get_minute();
                     break;
             case 1:
-                    alarm_state = 2;
-                    enc->setUndersample(20);
-                    set = alarm->is_set();
-                    break;
-            case 2:
                     this->release_input(true);
                     break;
             }
@@ -82,17 +72,6 @@ void Alarm_Menu::draw(void) {
 	u8g->setFont(u8g_font_fixed_v0);
 	u8g->setPrintPos(10,10);
 	u8g->print("SET ALARM TIME");
-
-	// draw alarm state
-	if (alarm->is_set()) {
-		u8g->setFont(u8g_font_fixed_v0);
-		u8g->setPrintPos(10,57);
-		u8g->print("Alarm is set");
-	} else {
-		u8g->setFont(u8g_font_fixed_v0);
-		u8g->setPrintPos(10,57);
-		u8g->print("Alarm is not set");
-	}
 
 	// Draw Time
 	u8g->setFont(u8g_font_fub30n);
@@ -114,10 +93,6 @@ void Alarm_Menu::draw(void) {
 		break;
 	case 1:
 		u8g->drawLine(time_x+5+60,time_y+1,time_x+40+60,time_y+1);
-		break;
-	case 2:
-		if (!alarm->is_set()) u8g->drawLine(10,58,98,58);
-		else u8g->drawLine(10,58,75,58);
 		break;
 	}
 }

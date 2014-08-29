@@ -18,20 +18,28 @@ public:
     
     void set_hour(int hour);
     void set_minute(int minute);
-    void set(boolean enabled);
     boolean is_set();
     int get_hour();
     int get_minute();
+    void enable_alarm();
+    void disable_alarm();
     
     void check();
     
 private:
     int alarm_hour;
     int alarm_minute;
+    int alarm_minutes;
     boolean alarm_is_set;
     RTC_clock *clock;
     SoundManager *sound;
     Fader *fader;
+    boolean alarmed;
+    boolean start_light;
+    boolean start_sound;
+    boolean stop_light;
+    boolean stop_sound;
+    boolean timeout;
 };
 
 #endif	/* ALARM_H */

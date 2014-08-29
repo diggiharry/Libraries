@@ -41,13 +41,13 @@ void Clock_Menu::input(void) {
 	case 0:
             hour += enc->getDirection();
             if (hour < 0) hour = 23;
-            hour = hour % 23;
+            hour = hour % 24;
             minute = ext_clock->minute;
             break;
 	case 1:
             minute += enc->getDirection();
             if (minute < 0) minute = 59;
-            minute = minute % 59;
+            minute = minute % 60;
             break;
 	}
 

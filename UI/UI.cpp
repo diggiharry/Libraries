@@ -26,7 +26,7 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_c
     clockface = new Clock_Face(enc, u8g, alarm, due_clock); 
     clockface->claim_draw(); 
     clockface->claim_input();
-    
+        
     // create Setup Menu       
     LinkedList<String*> labels = LinkedList<String*>();
     labels.add(new String("Set Alarm"));
@@ -99,12 +99,6 @@ void UI::init() {
 void UI::getTime() {
 	// get time from DS1307
 	//clock.getTime();
-}
-
-void UI::getLux() {
-    // get LUX from Digital_Light_TSL2561
-    TSL2561.getLux();
-    lux = TSL2561.calculateLux(0,0,1);
 }
 
 /*

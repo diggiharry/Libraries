@@ -9,7 +9,8 @@
 
 SoundManager::SoundManager(HardwareSerial &Serial) {
     HSerial = &Serial;
-    volume = 10;
+    volume = 20;
+    target_volume = volume;
     DFPlayer::mp3_set_serial(Serial);
     HSerial->flush();
     read();
@@ -51,19 +52,34 @@ void SoundManager::prev() {
     read();
 }
 void SoundManager::set_volume(int volume) {
-    volume = volume;
+    this->volume = volume;
+    this->target_volume = volume;
     DFPlayer::mp3_set_volume(volume);
     HSerial->flush();
     read();
 }
-void SoundManager::fade_in(int duration) {
-    
+int SoundManager::get_volume() {
+   return target_volume; 
 }
-void SoundManager::fade_out(int duration) {
-    
+void SoundManager::fade_in() {
+   target_volume = volume; 
+}
+void SoundManager::fade_out() {
+    target_volume = 0;
 }
 void SoundManager::update() {
-    
+    if (volume < target_volume) {
+        volume++;
+        DFPlayer::mp3_set_volume(volume);
+        HSerial->flush();
+        read();
+    }
+    if (volume > target_volume) {
+        volume--;
+        DFPlayer::mp3_set_volume(volume);
+        HSerial->flush();
+        read();
+    }    
 }
   
 

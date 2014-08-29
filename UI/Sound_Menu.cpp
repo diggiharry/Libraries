@@ -15,7 +15,7 @@ Sound_Menu::Sound_Menu(Widget *parent, SoundManager *sound)
     x = 0;
     y = 5;
 
-    volume = 10;      
+    volume = sound->get_volume();      
     song = 1;
      
     active_item = 0;
@@ -83,7 +83,7 @@ void Sound_Menu::draw(void) {
 
     if (volbox->is_increased()) {
         volume++;
-        if (volume > 30) volume = 30;
+        if (volume > 29) volume = 29;
         sound->set_volume(volume);
         //delay(400);
     }

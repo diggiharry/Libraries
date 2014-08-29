@@ -6,16 +6,23 @@ ShiftBar sb(4,LED_values);
 Fader::Fader() {
     state = IDLE;
     prev_millis = 0;
-    dur = 0;
+    dur = 3000;
     start = 0;
     target_state = IDLE;  
     count = -1;
     section_duration = 0;
+    
+    rainbow_period = 500;
+    rainbow_phase1 = 100;
+    rainbow_phase2 = 200;
+            
+    cw_period = 15000;
+    
     for (int h = 0;h<12;h++) {
         singlecolor_values[h] = 512;
     }      
-    //last_effect = &Fader::start_fade_to_color;
-    last_effect = &Fader::start_rainbow;
+    last_effect = FADE_TO_COLOR;
+    //last_effect = COLORWAVE;
 }
 
 void Fader::init() {
@@ -23,11 +30,26 @@ void Fader::init() {
     sb.update();
 }
 
-void Fader::start_last_effect() {
-    if (state == IDLE) (this->*last_effect)();
+boolean Fader::is_idle() {
+    if (state == IDLE) return true;
+    return false;
 }
 
-void Fader::update(unsigned long ms) {
+void Fader::start_last_effect() {
+    switch(last_effect) {
+        case  FADE_TO_COLOR:
+            start_fade_to_color(singlecolor_values, 3000);
+            break;
+        case  RAINBOW:
+            start_rainbow(rainbow_period, rainbow_phase1, rainbow_phase2);
+            break;
+        case  COLORWAVE:
+            start_colorwave(cw_period);
+            break;                
+    }
+}
+
+void Fader::update() {
     switch(state)
          {
             case    IDLE:
@@ -51,6 +73,7 @@ void Fader::update(unsigned long ms) {
           sb.set(h,floor(values[h*3]),floor(values[h*3+1]),floor(values[h*3+2]));  
     }    
     sb.update();
+    Serial.println(last_effect);
 }
 
 void Fader::set_color(int colors[12]) {
@@ -65,10 +88,20 @@ void Fader::set_all(int red, int green, int blue) {
         values[h*3] = red;
         values[h*3+1] = green;
         values[h*3+2] =  blue;
-    } 
+    }
     state = IDLE;
 }
 
+void Fader::set_all(float hue, float lightness) {
+    float rgb[3] = {0,0,0};
+    hslToRgb(hue, 0, lightness, rgb);  
+    for (int h = 0;h<4;h++) {
+        values[h*3] = rgb[0];
+        values[h*3+1] = rgb[1];
+        values[h*3+2] =  rgb[2];
+    }
+    state = IDLE;
+}
 
 void Fader::fade_to_color() {
     unsigned long curr_millis = millis();
@@ -86,15 +119,11 @@ void Fader::fade_to_color() {
     }   
 }
 
-void Fader::start_fade_to_color() {
-    start_fade_to_color( (int) singlecolor_values,1000);
-}
-
-void Fader::start_fade_to_color(int colors[12], unsigned long duration) {   
-    last_effect = &Fader::start_fade_to_color;
+void Fader::start_fade_to_color(int colors[12], unsigned long duration, boolean register_last_effect = true) {   
+    if (register_last_effect) last_effect = FADE_TO_COLOR;
     for (int h = 0;h<12;h++) {
         target_values[h] =  (float) colors[h];
-        singlecolor_values[h] = target_values[h];
+        if (register_last_effect) singlecolor_values[h] = colors[h];
         slopes[h] = ( target_values[h] - values[h] ) / duration  ;
     }
     dur = duration;
@@ -105,22 +134,22 @@ void Fader::start_fade_to_color(int colors[12], unsigned long duration) {
     fade_to_color();    
 }
 
-
 void Fader::fade_out() {
     int colors[12] = {  0,0,0, 0,0,0, 0,0,0, 0,0,0,}; 
-    start_fade_to_color(colors, 300);
+    start_fade_to_color(colors, 300, false);
+}
+
+void Fader::fade_out(int duration) {
+    int colors[12] = {  0,0,0, 0,0,0, 0,0,0, 0,0,0,}; 
+    start_fade_to_color(colors, duration, false);
 }
 
 float Fader::triangle_function(unsigned long ms,unsigned int period, int phase) {
     return 2 * abs(round( ( (float) ms+phase)/period)-( ( (float) ms+phase)/ period)) ;    
 }
 
-void Fader::start_rainbow() {
-    start_rainbow(rainbow_period, rainbow_phase1, rainbow_phase2);
-}
-
 void Fader::start_rainbow(int period, int phase1, int phase2) {
-    last_effect = &Fader::start_fade_to_color; 
+    last_effect = RAINBOW; 
     
     rainbow_phase1 = phase1;
     rainbow_phase2 = phase2;
@@ -137,9 +166,6 @@ void Fader::start_rainbow(int period, int phase1, int phase2) {
 
 void Fader::rainbow() {
     unsigned long diff_millis = millis() - start - 3000;
-    /*red = floor( 712+311 * (double)  cos(2*PI/period*ms) );
-    green = floor( 712+311 * (double) cos(2*PI/period*(phase_green-ms)));
-    blue = floor( 712+311 * (double) cos(2*PI/period*(phase_blue-ms)));*/
     float red = 1023*triangle_function(diff_millis,rainbow_period,0);
     float green = 1023*triangle_function(diff_millis,rainbow_period,rainbow_phase1);
     float blue = 1023*triangle_function(diff_millis,rainbow_period,rainbow_phase2);
@@ -184,19 +210,15 @@ void Fader::sunrise() {
     count++;
 }
 
-void Fader::start_colorwave() {
-    start_colorwave(cw_period);
-}
-
 void Fader::start_colorwave(int period) {
-    last_effect = &Fader::start_fade_to_color; 
+    last_effect = COLORWAVE; 
 
     cw_period = period;
     
     float buf = 1;
     float hue = 0;
     for (int h = 0;h<4;h++) {
-        hue = triangle_function(0,cw_period,h*( (float) cw_period/8));
+        hue = triangle_function(0,cw_period,h*( (float) cw_period/10));
         hsvToRgb(hue,buf,buf,target_values+h*3);
     }
         int duration = 2000;
@@ -216,14 +238,12 @@ void Fader::colorwave() {
     float buf = 1;
     float hue = 0;
     for (int h = 0;h<4;h++) {
-        hue = triangle_function(diff_millis,cw_period,h*(cw_period/8));
+        hue = triangle_function(diff_millis,cw_period,h*( (float) cw_period/10 ));
         hsvToRgb(hue,buf,buf,values+h*3);
     }
 }
 
-
 /**
-* 
 * RGBConverter.h - Arduino library for converting between RGB, HSV and HSL
 *
 * Ported from the Javascript at http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
@@ -305,4 +325,41 @@ void Fader::hsvToRgb(float h, float s, float v, float rgb[]) {
     rgb[0] = r * 1023;
     rgb[1] = g * 1023;
     rgb[2] = b * 1023;
+}
+
+
+/**
+* Converts an HSL color value to RGB. Conversion formula
+* adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+* Assumes h, s, and l are contained in the set [0, 1] and
+* returns r, g, and b in the set [0, 255].
+*
+* @param Number h The hue
+* @param Number s The saturation
+* @param Number l The lightness
+* @return Array The RGB representation
+*/
+void Fader::hslToRgb(float h, float s, float l, float rgb[]) {
+    float r, g, b;
+    if (s == 0) {
+        r = g = b = l; // achromatic
+    } else {
+        float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        float p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+    rgb[0] = r * 1023;
+    rgb[1] = g * 1023;
+    rgb[2] = b * 1023;
+}
+
+float Fader::hue2rgb(float p, float q, float t) {
+    if(t < 0) t += 1;
+    if(t > 1) t -= 1;
+    if(t < 1/6) return p + (q - p) * 6 * t;
+    if(t < 1/2) return q;
+    if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
 }

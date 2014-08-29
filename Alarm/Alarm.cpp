@@ -14,18 +14,21 @@ Alarm::Alarm(RTC_clock *clock, SoundManager *sound, Fader *fader) {
     alarm_hour = 0;
     alarm_minute = 0;
     alarm_is_set = false;
+    start_light = false;
+    start_sound = false;   
+    stop_light = false;
+    stop_sound = false;
+    timeout = false;
 }
 
 void Alarm::set_hour(int hour) {
     alarm_hour = hour;
+    alarm_minutes = (alarm_hour+1)*60+alarm_minute;
 }
 
 void Alarm::set_minute(int minute) {
     alarm_minute = minute;
-}
-
-void Alarm::set(boolean enabled) {
-    alarm_is_set = enabled;
+    alarm_minutes = (alarm_hour+1)*60+alarm_minute;
 }
 
 boolean Alarm::is_set() {
@@ -40,16 +43,65 @@ int Alarm::get_minute() {
     return alarm_minute;
 }
 
+void Alarm::disable_alarm() {
+    alarm_is_set = false;
+    start_light = false;
+    start_sound = false;   
+    stop_light = true;
+    stop_sound = true;  
+    timeout = false;
+}
+
+void Alarm::enable_alarm() {
+    alarm_is_set = true;
+    start_light = false;
+    start_sound = false;   
+    stop_light = false;
+    stop_sound = false;  
+    timeout = false;
+}
+
 void Alarm::check() {
-    if (alarm_is_set) {
-        int minutes = clock->get_minutes();
-        int hour = clock->get_hours();
+    int minutes;
+    int hour;
+  
+    minutes = clock->get_minutes();
+    hour = clock->get_hours();
         
-        minutes = hour*60+minutes;
-        int alarm_minutes = alarm_hour*60+alarm_minute;        
-            
-        //if (alarm_minutes == (minutes-30) ) fader->start_sunrise(30*60*1000); 
-        if (alarm_minutes == (minutes-30) ) fader->start_sunrise(60*1000); 
-        if (alarm_minutes == minutes) sound->play();       
-    }         
+    minutes = (hour+1)*60+minutes;   
+    
+    if (alarm_is_set) {           
+        if ((minutes+30) == alarm_minutes) start_light = true;
+        if (minutes == alarm_minutes) start_sound = true;
+
+        if ( (minutes-45) == alarm_minutes) {
+            stop_sound = true;
+            stop_light = true;
+            alarm_is_set = false;
+        }            
+
+    }      
+    
+    if (start_light) {
+        //fader->start_sunrise(60*1000);
+        fader->start_sunrise(5*60*1000);      
+        start_light = false;
+    }
+    
+    if (start_sound) {
+        sound->play();
+        start_sound = false;
+    }
+
+    if (stop_sound) {
+        sound->stop();
+        stop_sound = false;
+    }
+    
+    if (stop_light) {
+        fader->fade_out(10000);
+        stop_light = false;
+    }
+    
+
 }
