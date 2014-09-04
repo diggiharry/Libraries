@@ -31,7 +31,11 @@ void InputBox::claim_input()
     } else {
         enc->setUndersample(1);      
     }*/
-    enc->setUndersample(1);      
+    enc->setUndersample(3);      
+}
+
+void InputBox::set_value(int val) {
+    value = val;
 }
 
 int InputBox::get_value() {

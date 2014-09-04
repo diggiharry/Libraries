@@ -29,6 +29,8 @@
 #include <Sound_Menu.h>
 #include <Clock_Menu.h>
 #include <Background_Menu.h>
+#include <Date_Menu.h>
+#include <Dawn_Menu.h>
 
 #define LCD_MOSI 22
 #define LCD_SCK 24
@@ -70,6 +72,7 @@ class UI {
     Menu *setup; 
     Menu *settings; 
     Menu *lightm; 
+    Menu *miscm;
     Clock_Face *clockface;
     //Alarm_Face *alarmface;
     Alarm_Menu *alarmm;
@@ -79,6 +82,8 @@ class UI {
     Sound_Menu *soundm;
     Clock_Menu *clockm;
     Background_Menu *backgroundm;
+    Date_Menu *datem;   
+    Dawn_Menu *dawnm;
             
     SoundManager *sound;
    
@@ -98,7 +103,6 @@ class UI {
     Fader *fade;
 
     RTC_clock *due_clock;
-    const char* daynames[7]={"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
     Alarm *alarm;
 };

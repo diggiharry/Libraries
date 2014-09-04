@@ -41,7 +41,7 @@ void Fader::start_last_effect() {
             start_fade_to_color(singlecolor_values, 3000);
             break;
         case  RAINBOW:
-            start_rainbow(rainbow_period, rainbow_phase1, rainbow_phase2);
+            start_rainbow(rainbow_period);
             break;
         case  COLORWAVE:
             start_colorwave(cw_period);
@@ -144,47 +144,43 @@ void Fader::fade_out(int duration) {
     start_fade_to_color(colors, duration, false);
 }
 
+float Fader::sawtooth_function(unsigned long ms,unsigned int period, int phase) {
+    return ( (float) ms+phase)/period - floor(( (float) ms+phase)/period);    
+}
+
 float Fader::triangle_function(unsigned long ms,unsigned int period, int phase) {
     return 2 * abs(round( ( (float) ms+phase)/period)-( ( (float) ms+phase)/ period)) ;    
 }
 
-void Fader::start_rainbow(int period, int phase1, int phase2) {
+void Fader::start_rainbow(int period) {
     last_effect = RAINBOW; 
-    
-    rainbow_phase1 = phase1;
-    rainbow_phase2 = phase2;
+
     rainbow_period = period;
     
-    int red = 1023*triangle_function(0,period,0);
-    int green = 1023*triangle_function(0,period,phase1);
-    int blue = 1023*triangle_function(0,period,phase2);
-    int start_values[12] = { red,green,0, 0,green,blue, red,0,blue, red,green,blue }; 
-    start_fade_to_color(start_values,3000);
+    float rgb[] = {0,0,0};
+    int start_values[12]; 
+    float hue = sawtooth_function(0,rainbow_period,0);
+    hsvToRgb(hue,1,1,rgb);
+    for (int h = 0;h<4;h++) {
+        start_values[h*3] = (int) rgb[0];
+        start_values[h*3+1] = (int) rgb[1];
+        start_values[h*3+2] = (int) rgb[2];        
+    }
+ 
+    start_fade_to_color(start_values, 3000, false);
     target_state = RAINBOW;
-    //start = millis();
 }
 
 void Fader::rainbow() {
+    float rgb[] = {0,0,0};
     unsigned long diff_millis = millis() - start - 3000;
-    float red = 1023*triangle_function(diff_millis,rainbow_period,0);
-    float green = 1023*triangle_function(diff_millis,rainbow_period,rainbow_phase1);
-    float blue = 1023*triangle_function(diff_millis,rainbow_period,rainbow_phase2);
-
-    values[0] = red;
-    values[1] = green;
-    values[2] = 0;
-
-    values[3] = 0;
-    values[4] = green;
-    values[5] = blue;
-
-    values[6] = red;
-    values[7] = 0;
-    values[8] = blue;
-
-    values[9] = red;
-    values[10] = green;
-    values[11] = blue;
+    float hue = sawtooth_function(diff_millis,rainbow_period,0);
+    hsvToRgb(hue,1,1,rgb);
+    for (int h = 0;h<4;h++) {
+        values[h*3] =  rgb[0];
+        values[h*3+1] =  rgb[1];
+        values[h*3+2] =  rgb[2];
+    }    
 }
 
 void Fader::start_sunrise(unsigned long duration) {
@@ -218,19 +214,20 @@ void Fader::start_colorwave(int period) {
     float buf = 1;
     float hue = 0;
     for (int h = 0;h<4;h++) {
-        hue = triangle_function(0,cw_period,h*( (float) cw_period/10));
+        //hue = triangle_function(0,cw_period,h*( (float) cw_period/2));
+        hue = sawtooth_function(0,cw_period,h*( (float) cw_period/4));
         hsvToRgb(hue,buf,buf,target_values+h*3);
     }
-        int duration = 2000;
-        for (int h = 0;h<12;h++) {
-            slopes[h] = ( target_values[h] - values[h] ) / duration  ;
-        }
-        dur = duration;
-        target_state = COLORWAVE;
-        state = FADE_TO_COLOR;
-        start = millis();
-        prev_millis = start; 
-        fade_to_color();   
+    int duration = 2000;
+    for (int h = 0;h<12;h++) {
+        slopes[h] = ( target_values[h] - values[h] ) / duration  ;
+    }
+    dur = duration;
+    target_state = COLORWAVE;
+    state = FADE_TO_COLOR;
+    start = millis();
+    prev_millis = start; 
+    fade_to_color();   
 }
 
 void Fader::colorwave() {
@@ -238,7 +235,8 @@ void Fader::colorwave() {
     float buf = 1;
     float hue = 0;
     for (int h = 0;h<4;h++) {
-        hue = triangle_function(diff_millis,cw_period,h*( (float) cw_period/10 ));
+        //hue = triangle_function(diff_millis,cw_period,h*( (float) cw_period/10 ));
+        hue = sawtooth_function(diff_millis,cw_period,h*( (float) cw_period/4 ));
         hsvToRgb(hue,buf,buf,values+h*3);
     }
 }

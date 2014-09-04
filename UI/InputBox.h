@@ -20,6 +20,7 @@ public:
     void claim_input();
     
     int get_value();
+    void set_value(int val);
     
     static int numDigits(int number);
     

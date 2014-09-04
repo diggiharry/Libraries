@@ -11,6 +11,7 @@ Alarm::Alarm(RTC_clock *clock, SoundManager *sound, Fader *fader) {
     this->clock = clock;
     this->sound = sound;
     this->fader = fader;
+    dawn_dur = DAWN_DURATION;
     alarm_hour = 0;
     alarm_minute = 0;
     alarm_is_set = false;
@@ -18,7 +19,11 @@ Alarm::Alarm(RTC_clock *clock, SoundManager *sound, Fader *fader) {
     start_sound = false;   
     stop_light = false;
     stop_sound = false;
-    timeout = false;
+    light_minutes = 0;
+}
+
+void Alarm::set_dawn_duration(int duration) {
+    dawn_dur = duration;
 }
 
 void Alarm::set_hour(int hour) {
@@ -49,7 +54,8 @@ void Alarm::disable_alarm() {
     start_sound = false;   
     stop_light = true;
     stop_sound = true;  
-    timeout = false;
+    int minutes = (clock->get_hours()+1)*60+clock->get_minutes();   
+    light_minutes = minutes;
 }
 
 void Alarm::enable_alarm() {
@@ -58,7 +64,6 @@ void Alarm::enable_alarm() {
     start_sound = false;   
     stop_light = false;
     stop_sound = false;  
-    timeout = false;
 }
 
 void Alarm::check() {
@@ -71,20 +76,21 @@ void Alarm::check() {
     minutes = (hour+1)*60+minutes;   
     
     if (alarm_is_set) {           
-        if ((minutes+30) == alarm_minutes) start_light = true;
+        if ((minutes+dawn_dur) == alarm_minutes) start_light = true;
         if (minutes == alarm_minutes) start_sound = true;
 
-        if ( (minutes-45) == alarm_minutes) {
+        if ( (minutes-TIMEOUT) == alarm_minutes) {
             stop_sound = true;
             stop_light = true;
             alarm_is_set = false;
+            light_minutes = minutes;
         }            
 
-    }      
+    }   
     
     if (start_light) {
         //fader->start_sunrise(60*1000);
-        fader->start_sunrise(5*60*1000);      
+        fader->start_sunrise(dawn_dur*60*1000);      
         start_light = false;
     }
     
@@ -97,10 +103,11 @@ void Alarm::check() {
         sound->stop();
         stop_sound = false;
     }
-    
-    if (stop_light) {
-        fader->fade_out(10000);
-        stop_light = false;
+        
+    if (stop_light)
+        if ( (minutes-10) >= light_minutes ) {
+            fader->fade_out(10000);
+            stop_light = false;
     }
     
 

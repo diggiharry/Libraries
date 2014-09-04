@@ -39,7 +39,7 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_c
     labels = LinkedList<String*>();
     labels.add(new String("Set Clock"));
     labels.add(new String("Set Sound"));
-    labels.add(new String("Set Background"));
+    labels.add(new String("Misc. Settings"));
     labels.add(new String("Done"));
     settings = new Menu(clockface,&labels);
     
@@ -50,6 +50,14 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_c
     labels.add(new String("Rainbow"));
     labels.add(new String("Done"));
     lightm = new Menu(clockface,&labels);
+    
+    // create Misc Menu       
+    labels = LinkedList<String*>();
+    labels.add(new String("Set Date"));
+    labels.add(new String("Set Dawn Duration"));
+    labels.add(new String("Set Background"));
+    labels.add(new String("Done"));
+    miscm = new Menu(clockface,&labels);
          
     // Create Special Menus
     alarmm = new Alarm_Menu(clockface,alarm);
@@ -59,6 +67,8 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_c
     soundm = new Sound_Menu(clockface,sound);
     clockm = new Clock_Menu(clockface, due_clock, &ext_clock);
     backgroundm = new Background_Menu(clockface);
+    datem = new Date_Menu(clockface, due_clock, &ext_clock);
+    dawnm = new Dawn_Menu(clockface, alarm);
     
     // Set targets
     clockface->set_target(setup);
@@ -68,15 +78,21 @@ UI::UI(Encoder *encoder,Fader *fader, U8G_CLASS *u8g, SoundManager *sound, RTC_c
     setup->add_target(2,settings);
     setup->add_target(3,clockface);
 
-    settings->add_target(0,clockm);
-    settings->add_target(1,soundm);
-    settings->add_target(2,backgroundm);
-    settings->add_target(3,clockface);  
-    
     lightm->add_target(0,singlecolorm);
     lightm->add_target(1,colorwavem);
     lightm->add_target(2,rainbowm);
     lightm->add_target(3,clockface);
+    
+    settings->add_target(0,clockm);
+    settings->add_target(1,soundm);
+    settings->add_target(2,miscm);
+    settings->add_target(3,clockface);  
+  
+    miscm->add_target(0,datem);
+    miscm->add_target(1,dawnm);
+    miscm->add_target(2,backgroundm);
+    miscm->add_target(3,clockface); 
+
   
 }
 
@@ -92,7 +108,8 @@ void UI::init() {
         ext_clock.getTime(); 
         
         due_clock->set_time(ext_clock.hour, ext_clock.minute, ext_clock.second);
-
+        due_clock->set_date(ext_clock.dayOfMonth,ext_clock.month, (unsigned int) ext_clock.year);
+        
 	TSL2561.init();    
 }
 

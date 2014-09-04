@@ -23,13 +23,11 @@ public:
 private:
     
     InputBox *periodbox;    
-    InputBox *phase1box;
-    InputBox *phase2box;
     MenuItem *done;    
     
     Fader *fader;
     
-    int period, phase1, phase2;
+    int period;
     
     int active_item;     
 };

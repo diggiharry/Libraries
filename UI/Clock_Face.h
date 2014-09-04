@@ -26,6 +26,8 @@ private:
     Alarm* alarm;
     RTC_clock* clock;   
     Widget *target;
+    
+    const char* daynames[7]={"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 };
 
 #endif	/* CLOCK_FACE_H */

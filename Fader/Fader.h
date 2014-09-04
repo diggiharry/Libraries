@@ -22,7 +22,7 @@ class Fader {
         Fader();
         void update();
         void init();
-        void start_rainbow(int period, int phase1, int phase);        
+        void start_rainbow(int period);        
         void start_fade_to_color(int colors[12],unsigned long duration = 3000, boolean register_last_effect = true);
         void start_sunrise(unsigned long duration);
         void start_colorwave(int period);
@@ -47,7 +47,7 @@ class Fader {
         int target_state;
         
         float triangle_function(unsigned long ms,unsigned int period, int phase);
-    
+        float sawtooth_function(unsigned long ms,unsigned int period, int phase);
         void fade_to_color();
         int singlecolor_values[12] = {0,0,0, 0,0,0, 0,0,0, 0,0,0};
 

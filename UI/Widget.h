@@ -48,6 +48,9 @@ public:
     static Widget *has_input;
     static Widget *is_drawn;      
 
+    static String time2str(int hour,int minute);
+    static String dec2str(int dec);
+    
 protected:
     Encoder *enc;
     U8G_CLASS *u8g; 
@@ -56,9 +59,6 @@ protected:
     
     int x,y;
     int height,width;
-    
-    static String time2str(int hour,int minute);
-    static String dec2str(int dec);
     
     int ID;
     static int num_widgets;

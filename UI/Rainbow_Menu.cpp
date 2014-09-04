@@ -15,20 +15,12 @@ Rainbow_Menu::Rainbow_Menu(Widget *parent, Fader *fader)
     x = 0;
     y = 5;
 
-    period = 500;      
-    phase1 = 100;
-    phase2 = 200;
+    period = 5000;      
      
     active_item = 0;
     int i = 0;    
-    periodbox = new InputBox(this, "Period", 20, 1000, period*10);
+    periodbox = new InputBox(this, "Period", 1, 1000, period/1000);
     periodbox->set_pos(x+20,y+10+i*(periodbox->get_height()+4)-2);
-    i++;
-    phase1box = new InputBox(this, "Phase 1", 0, 300, phase1*10);
-    phase1box->set_pos(x+20,y+10+i*(phase1box->get_height()+4)-2);
-    i++;
-    phase2box = new InputBox(this, "Phase 2", 0, 300, phase2*10);
-    phase2box->set_pos(x+20,y+10+i*(phase2box->get_height()+4)-2);
     i++;
     done = new MenuItem("Done", this);     
     done->set_pos(x+20,y+10+i*(done->get_height()+4)-2);
@@ -49,8 +41,8 @@ void Rainbow_Menu::claim_input() {
 void Rainbow_Menu::input(void) {
    
     active_item += enc->getDirection();
-    if (active_item < 0) active_item = 3;
-    active_item %= 4;    
+    if (active_item < 0) active_item = 1;
+    active_item %= 2;    
     
     if (enc->isReleased()) {
         switch(active_item) {
@@ -58,14 +50,8 @@ void Rainbow_Menu::input(void) {
                 periodbox->claim_input();
                 break;
             case 1:
-                phase1box->claim_input();
-                break;
-            case 2:
-                phase2box->claim_input();
-                break;
-            case 3:
                 active_item = 0;
-                fader->start_rainbow(period, phase1, phase2);
+                fader->start_rainbow(period);
                 this->release_input(true);
                 break;            
         }
@@ -81,8 +67,6 @@ void Rainbow_Menu::input(void) {
 void Rainbow_Menu::draw(void) {
     
     periodbox->draw();
-    phase1box->draw();
-    phase2box->draw();
     done->draw();
 
     u8g->setFont(u8g_font_cu12_67_75);
@@ -91,18 +75,10 @@ void Rainbow_Menu::draw(void) {
                 u8g->setPrintPos(5,periodbox->get_y()+3);            
                 break;
             case 1:
-                u8g->setPrintPos(5,phase1box->get_y()+3);            
-                break;
-            case 2:
-                u8g->setPrintPos(5,phase2box->get_y()+3);            
-                break;
-            case 3:
                 u8g->setPrintPos(5,done->get_y()+3);            
                 break;            
         }
     u8g->print( (char) 104 );
     
-    period = periodbox->get_value()/10 ;
-    phase1 = phase1box->get_value()/10 ;
-    phase2 = phase2box->get_value()/10 ;   
+    period = periodbox->get_value()*1000 ;
 }
